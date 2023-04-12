@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Resource extends StatelessWidget {
-  const Resource({Key? key}) : super(key: key);
+  const Resource({Key? key, required this.uid}) : super(key: key);
+  final String uid;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class Resource extends StatelessWidget {
         onPressed: () {
           var ref = FirebaseFirestore.instance
               .collection('courses')
-              .doc('vy3n4NmgSFh3aLNenv5w')
+              .doc(uid)
               .collection('resource');
           ref.doc().set({
             'title': 'Figma ',
@@ -24,22 +25,26 @@ class Resource extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')
-              .doc('vy3n4NmgSFh3aLNenv5w')
+              .doc(uid)
               .collection('resource')
               .snapshots(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(
-                child: Text('No data found'),
-              );
-            }
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
             var data = snapshot.data!.docs;
-            var width = MediaQuery.of(context).size.width;
+            if (data.isEmpty) {
+              return const Center(
+                child: Text('No data found'),
+              );
+            }
+            if (!snapshot.hasData) {
+              return const Center(
+                child: Text('Something went wrong'),
+              );
+            }
             return ListView.separated(
               shrinkWrap: true,
               itemCount: data.length,

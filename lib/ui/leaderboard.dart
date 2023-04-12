@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Leaderboard extends StatelessWidget {
-  const Leaderboard({Key? key}) : super(key: key);
+  const Leaderboard({Key? key, required this.uid}) : super(key: key);
+  final String uid;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class Leaderboard extends StatelessWidget {
         onPressed: () {
           var ref = FirebaseFirestore.instance
               .collection('courses')
-              .doc('vy3n4NmgSFh3aLNenv5w')
+              .doc(uid)
               .collection('leaderboard');
           ref.doc().set({
             'name': 'Figma ',
@@ -45,22 +46,26 @@ class Leaderboard extends StatelessWidget {
               child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('courses')
-                      .doc('vy3n4NmgSFh3aLNenv5w')
+                      .doc(uid)
                       .collection('leaderboard')
                       .snapshots(),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                        child: Text('No data found'),
-                      );
-                    }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }
                     var data = snapshot.data!.docs;
-                    var width = MediaQuery.of(context).size.width;
+                    if (data.isEmpty) {
+                      return const Center(
+                        child: Text('No data found'),
+                      );
+                    }
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: Text('Something went wrong'),
+                      );
+                    }
                     return ListView.separated(
                       separatorBuilder: (context, index) =>
                           const Divider(height: 2),
@@ -75,30 +80,32 @@ class Leaderboard extends StatelessWidget {
                           tileColor: index == 2 ? Colors.yellow : null,
                           leading: Text('${data[index].get('position')}'),
                           title: Text(data[index].get('name')),
-                          trailing: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(
-                                  '${data[index].get('point')}',
+                          trailing: FittedBox(
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    '${data[index].get('point')}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                ),
+                                Text(
+                                  'points',
                                   style: Theme.of(context)
                                       .textTheme
-                                      .titleMedium!
+                                      .bodySmall!
                                       .copyWith(
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.w100,
                                       ),
                                 ),
-                              ),
-                              Text(
-                                'points',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.w100,
-                                    ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },

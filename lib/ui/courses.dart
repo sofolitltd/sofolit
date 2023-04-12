@@ -24,17 +24,22 @@ class Courses extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('courses').snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(
-              child: Text('No data found'),
-            );
-          }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
           var data = snapshot.data!.docs;
+          if (data.isEmpty) {
+            return const Center(
+              child: Text('No data found'),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text('Something went wrong'),
+            );
+          }
           var width = MediaQuery.of(context).size.width;
           return Container(
             width: double.infinity,
@@ -67,72 +72,84 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: SizedBox(
-        width: 300,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.blue.shade100,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
+    return GestureDetector(
+      onTap: () {
+        context.push(
+          '/dashboard/courses/${data.id}',
+          extra: data.get('title'),
+        );
+      },
+      child: Card(
+        child: SizedBox(
+          width: 300,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade100,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
+                  ),
                 ),
               ),
-            ),
 
-            //
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 4,
-                        horizontal: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(data.get('subtitle'))),
-                  const SizedBox(height: 8),
-                  Text(
-                    data.get('title'),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: () {
-                  context.push('/dashboard/courses/figma');
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              //
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Continue'.toUpperCase()),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward_rounded),
+                    Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(data.get('subtitle'))),
+                    const SizedBox(height: 8),
+                    Text(
+                      data.get('title'),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                  onPressed: () {
+                    //
+                    context.push(
+                      '/dashboard/courses/${data.id}',
+                      extra: data.get('title'),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Continue'.toUpperCase()),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sofolit/auth/login.dart';
 import 'package:sofolit/screens/splash.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -10,7 +11,7 @@ import '/ui/course_details.dart';
 import '/ui/courses.dart';
 import '/ui/profile.dart';
 import 'firebase_options.dart';
-import 'ui/resource.dart';
+import 'ui/resources.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,8 @@ class MyApp extends StatelessWidget {
       title: 'Sofol IT',
       theme: ThemeData(
         primaryColor: Colors.deepPurpleAccent.shade200,
+        primarySwatch: Colors.deepPurple,
+        fontFamily: GoogleFonts.hindSiliguri().fontFamily,
         progressIndicatorTheme: ProgressIndicatorThemeData(
           color: Colors.deepPurpleAccent.shade200,
         ),
@@ -82,25 +85,34 @@ GoRouter _router = GoRouter(
       ),
     ),
     GoRoute(
-      path: '/dashboard/courses/figma',
-      pageBuilder: (context, state) => FadeTransitionPage(
-        key: ValueKey<String>(
-            state.location + DateTime.now().millisecondsSinceEpoch.toString()),
-        child: const Dashboard(
-          selectedTab: ScaffoldTab.courses,
-          child: Figma(),
-        ),
-      ),
+      path: '/dashboard/courses/:uid',
+      pageBuilder: (context, state) {
+        var uid = state.params['uid']!;
+        final title = state.extra! as String;
+        return FadeTransitionPage(
+          key: ValueKey<String>(state.location +
+              DateTime.now().millisecondsSinceEpoch.toString()),
+          child: Dashboard(
+            selectedTab: ScaffoldTab.courses,
+            child: CourseDetails(
+              uid: uid,
+              title: title,
+            ),
+          ),
+        );
+      },
     ),
     GoRoute(
       path: '/dashboard/resources',
-      pageBuilder: (context, state) => FadeTransitionPage(
-        key: _scaffoldKey,
-        child: const Dashboard(
-          selectedTab: ScaffoldTab.resources,
-          child: Resource(),
-        ),
-      ),
+      pageBuilder: (context, state) {
+        return FadeTransitionPage(
+          key: _scaffoldKey,
+          child: const Dashboard(
+            selectedTab: ScaffoldTab.resources,
+            child: Resources(),
+          ),
+        );
+      },
     ),
     GoRoute(
       path: '/dashboard/profile',

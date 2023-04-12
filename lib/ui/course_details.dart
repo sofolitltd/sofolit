@@ -6,14 +6,18 @@ import 'recording.dart';
 import 'resource.dart';
 import 'study_plan.dart';
 
-class Figma extends StatelessWidget {
-  const Figma({Key? key}) : super(key: key);
+class CourseDetails extends StatelessWidget {
+  const CourseDetails({Key? key, required this.uid, required this.title})
+      : super(key: key);
+
+  final String uid;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Figma'),
+        title: Text(title),
       ),
       body: DefaultTabController(
         length: 5,
@@ -36,14 +40,14 @@ class Figma extends StatelessWidget {
                 ],
               ),
             ),
-            const Expanded(
+            Expanded(
               child: TabBarView(
                 children: [
-                  StudyPlan(),
-                  Recording(),
-                  Assignment(),
-                  Resource(),
-                  Leaderboard(),
+                  StudyPlan(uid: uid),
+                  Recording(uid: uid),
+                  Assignment(uid: uid),
+                  Resource(uid: uid),
+                  Leaderboard(uid: uid),
                 ],
               ),
             ),
