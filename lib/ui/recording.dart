@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Recording extends StatelessWidget {
@@ -8,22 +9,24 @@ class Recording extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var ref = FirebaseFirestore.instance
-              .collection('courses')
-              .doc(uid)
-              .collection('recoding');
-          ref.doc().set({
-            'class': 1,
-            'title': 'What is figma ',
-            'description': 'Learn about figma',
-            'recording': '',
-            'duration': '1h 21m',
-            'time': DateTime.now(),
-          });
-        },
-      ),
+      floatingActionButton: kIsWeb
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                var ref = FirebaseFirestore.instance
+                    .collection('courses')
+                    .doc(uid)
+                    .collection('recoding');
+                ref.doc().set({
+                  'class': 1,
+                  'title': 'What is figma ',
+                  'description': 'Learn about figma',
+                  'recording': '',
+                  'duration': '1h 21m',
+                  'time': DateTime.now(),
+                });
+              },
+            ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')

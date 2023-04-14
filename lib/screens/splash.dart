@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:sofolit/wrapper.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -13,7 +13,10 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 1000), () {
-      context.go('/dashboard');
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const WrapperScreen()),
+          (route) => false);
     });
   }
 
@@ -28,11 +31,11 @@ class _SplashState extends State<Splash> {
               'assets/logo/logo_big.png',
               height: 50,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             const SizedBox(
-              height: 24,
-              width: 24,
-              child: CircularProgressIndicator(),
+              height: 32,
+              width: 32,
+              child: CircularProgressIndicator(strokeWidth: 2),
             ),
             const SizedBox(height: 24),
           ],

@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/screens/dashboard/study/add_study.dart';
+import 'package:sofolit/utils/date_time_formatter.dart';
+import 'package:sofolit/utils/open_app.dart';
 
 class StudyPlan extends StatefulWidget {
   const StudyPlan({Key? key, required this.uid}) : super(key: key);
@@ -16,29 +20,23 @@ class _StudyPlanState extends State<StudyPlan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var ref = FirebaseFirestore.instance
-              .collection('courses')
-              .doc(widget.uid)
-              .collection('study');
-          ref.doc().set({
-            'class': 1,
-            'title': 'What is figma ',
-            'description': 'Learn about figma',
-            'meeting':
-                'https://us04web.zoom.us/j/5583151538?pwd=Tk1zMmc2WWpuYW9mZXNCLzVFYXFxdz09',
-            'resource': '',
-            'recording': '',
-            'time': DateTime.now(),
-          });
-        },
-      ),
+      floatingActionButton: kIsWeb
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddStudyPlan(uid: widget.uid)));
+              },
+              child: const Icon(Icons.add),
+            ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')
               .doc(widget.uid)
               .collection('study')
+              .orderBy('class')
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -114,21 +112,35 @@ class _StudyCardState extends State<StudyCard> {
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Text(
-                'Day ${widget.data.get('class')} ${widget.data.get('title')}'),
+              'Class ${widget.data.get('class')} - ${widget.data.get('title')}',
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(
               children: [
-                const Icon(
-                  Icons.calendar_month_outlined,
-                  size: 16,
+                //date
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_month_outlined, size: 16),
+                    const SizedBox(width: 4),
+                    Text(DTFormatter.dateFormat(widget.data.get('time'))),
+                  ],
                 ),
 
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
 
-                //
-                Text(widget.data.get('time').toDate().toString()),
+                //time
+                Row(
+                  children: [
+                    const Icon(Icons.watch_later_outlined, size: 16),
+                    const SizedBox(width: 4),
+                    Text(DTFormatter.timeFormat(widget.data.get('time'))),
+                  ],
+                ),
               ],
             ),
           ),
@@ -140,7 +152,7 @@ class _StudyCardState extends State<StudyCard> {
               children: [
                 Theme(
                   data:
-                      ThemeData().copyWith(dividerColor: Colors.grey.shade200),
+                      ThemeData().copyWith(dividerColor: Colors.grey.shade500),
                   child: const Divider(height: 2),
                 ),
                 const SizedBox(height: 12),
@@ -162,7 +174,9 @@ class _StudyCardState extends State<StudyCard> {
                             Icons.video_call_outlined,
                             color: Colors.black,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            OpenApp.withUrl(widget.data.get('meeting'));
+                          },
                           label: const Text(
                             'Live Class',
                             style: TextStyle(

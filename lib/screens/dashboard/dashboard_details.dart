@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:sofolit/ui/assignment.dart';
-import 'package:sofolit/ui/leaderboard.dart';
+import 'package:sofolit/screens/dashboard/assignment/assignment.dart';
+import 'package:sofolit/screens/leaderboard.dart';
 
-import 'recording.dart';
-import 'resource.dart';
-import 'study_plan.dart';
+import '../../ui/recording.dart';
+import '../../ui/resource.dart';
+import 'study/study_plan.dart';
 
-class CourseDetails extends StatelessWidget {
-  const CourseDetails({Key? key, required this.uid, required this.title})
+class DashboardDetails extends StatelessWidget {
+  const DashboardDetails({Key? key, required this.uid, required this.title})
       : super(key: key);
 
   final String uid;
@@ -33,10 +33,10 @@ class CourseDetails extends StatelessWidget {
                 isScrollable: true,
                 tabs: [
                   Tab(text: 'Study Plan'),
-                  Tab(text: 'Recording'),
                   Tab(text: 'Assignment'),
-                  Tab(text: 'Resource'),
                   Tab(text: 'Leaderboard'),
+                  Tab(text: 'Recording'),
+                  Tab(text: 'Resource'),
                 ],
               ),
             ),
@@ -44,10 +44,10 @@ class CourseDetails extends StatelessWidget {
               child: TabBarView(
                 children: [
                   StudyPlan(uid: uid),
-                  Recording(uid: uid),
                   Assignment(uid: uid),
-                  Resource(uid: uid),
                   Leaderboard(uid: uid),
+                  Recording(uid: uid),
+                  Resource(uid: uid),
                 ],
               ),
             ),

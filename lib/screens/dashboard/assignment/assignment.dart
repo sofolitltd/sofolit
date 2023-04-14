@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/screens/dashboard/assignment/add_assignment.dart';
+
+import '../../../utils/date_time_formatter.dart';
 
 class Assignment extends StatelessWidget {
   const Assignment({Key? key, required this.uid}) : super(key: key);
@@ -8,21 +12,17 @@ class Assignment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var ref = FirebaseFirestore.instance
-              .collection('courses')
-              .doc(uid)
-              .collection('assignment');
-          ref.doc().set({
-            'title': 'What is figma ',
-            'description': 'Learn about figma',
-            'status': 'Pending',
-            'marks': '',
-            'time': DateTime.now(),
-          });
-        },
-      ),
+      floatingActionButton: kIsWeb
+          ? null
+          : FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddAssignment(uid: uid)));
+              },
+            ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')
@@ -77,14 +77,20 @@ class AssignmentCard extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 0, 0),
-            child: Text(data.get('time').toDate().toString()),
+            child: Row(
+              children: [
+                const Text(
+                  'Deadline: ',
+                  style: TextStyle(color: Colors.red),
+                ),
+                Text(DTFormatter.dateTimeFormat(data.get('time'))),
+              ],
+            ),
           ),
 
           //
           ListTile(
-            onTap: () {
-              // context.goNamed('class', params: {'id': '${data + 1}'});
-            },
+            onTap: () {},
             trailing: Container(
                 padding: const EdgeInsets.symmetric(
                   vertical: 2,
@@ -104,27 +110,39 @@ class AssignmentCard extends StatelessWidget {
                 // status
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    vertical: 4,
+                    vertical: 2,
                     horizontal: 8,
                   ),
                   margin: const EdgeInsets.symmetric(
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.deepOrangeAccent.shade200,
+                    color: data.get('status') == 'Pending'
+                        ? Colors.orange.shade500
+                        : data.get('status') == 'Submitted'
+                            ? Colors.blue.shade500
+                            : Colors.green.shade500,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.watch_later_outlined,
+                      Icon(
+                        data.get('status') == 'Pending'
+                            ? Icons.watch_later_outlined
+                            : data.get('status') == 'Submitted'
+                                ? Icons.upload_file_outlined
+                                : Icons.fact_check_outlined,
                         size: 16,
+                        color: Colors.white,
                       ),
 
                       const SizedBox(width: 4),
 
                       //
-                      Text(data.get('status')),
+                      Text(
+                        data.get('status'),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
                 ),
@@ -132,32 +150,39 @@ class AssignmentCard extends StatelessWidget {
                 const SizedBox(width: 8),
 
                 // marks
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4,
-                    horizontal: 8,
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.calculate_outlined,
-                        size: 16,
-                      ),
+                if (data.get('status') == 'Approved')
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 2,
+                      horizontal: 8,
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurpleAccent.shade200,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calculate_outlined,
+                          size: 16,
+                          color: Colors.white,
+                        ),
 
-                      const SizedBox(width: 4),
+                        const SizedBox(width: 4),
 
-                      //
-                      Text(data.get('marks')),
-                    ],
+                        //
+                        Text(
+                          '${data.get('marks')}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
           ),

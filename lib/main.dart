@@ -2,16 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sofolit/auth/login.dart';
 import 'package:sofolit/screens/splash.dart';
 import 'package:url_strategy/url_strategy.dart';
 
-import '/screens/dashboard.dart';
-import '/ui/course_details.dart';
-import '/ui/courses.dart';
-import '/ui/profile.dart';
 import 'firebase_options.dart';
-import 'ui/resources.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,20 +25,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Sofol IT',
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.grey.shade200,
         primaryColor: Colors.deepPurpleAccent.shade200,
         primarySwatch: Colors.deepPurple,
         fontFamily: GoogleFonts.hindSiliguri().fontFamily,
         progressIndicatorTheme: ProgressIndicatorThemeData(
           color: Colors.deepPurpleAccent.shade200,
         ),
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           color: Colors.white,
-          titleTextStyle: TextStyle(color: Colors.black),
-          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+              ),
+          iconTheme: const IconThemeData(color: Colors.black),
           elevation: 0,
+          centerTitle: true,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -57,75 +56,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      routerConfig: _router,
+      home: const Splash(),
     );
   }
 }
-
-const ValueKey<String> _scaffoldKey = ValueKey<String>('App scaffold');
-
-GoRouter _router = GoRouter(
-  routes: [
-    GoRoute(path: '/', redirect: (_, __) => '/splash'),
-    GoRoute(path: '/dashboard', redirect: (_, __) => '/dashboard/courses'),
-
-    //
-    GoRoute(path: '/splash', builder: (_, __) => const Splash()),
-    GoRoute(path: '/login', builder: (_, __) => const Login()),
-
-    //
-    GoRoute(
-      path: '/dashboard/courses',
-      pageBuilder: (context, state) => FadeTransitionPage(
-        key: _scaffoldKey,
-        child: const Dashboard(
-          selectedTab: ScaffoldTab.courses,
-          child: Courses(),
-        ),
-      ),
-    ),
-    GoRoute(
-      path: '/dashboard/courses/:uid',
-      pageBuilder: (context, state) {
-        var uid = state.params['uid']!;
-        final title = state.extra! as String;
-        return FadeTransitionPage(
-          key: ValueKey<String>(state.location +
-              DateTime.now().millisecondsSinceEpoch.toString()),
-          child: Dashboard(
-            selectedTab: ScaffoldTab.courses,
-            child: CourseDetails(
-              uid: uid,
-              title: title,
-            ),
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/dashboard/resources',
-      pageBuilder: (context, state) {
-        return FadeTransitionPage(
-          key: _scaffoldKey,
-          child: const Dashboard(
-            selectedTab: ScaffoldTab.resources,
-            child: Resources(),
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/dashboard/profile',
-      pageBuilder: (context, state) => FadeTransitionPage(
-        key: _scaffoldKey,
-        child: const Dashboard(
-          selectedTab: ScaffoldTab.profile,
-          child: Profile(),
-        ),
-      ),
-    ),
-  ],
-);
 
 /// A page that fades in an out.
 class FadeTransitionPage extends CustomTransitionPage<void> {
