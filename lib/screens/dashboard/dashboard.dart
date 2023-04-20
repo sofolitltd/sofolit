@@ -1,14 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/dashboard/widgets/dashboard_course.dart';
-import 'package:sofolit/screens/dashboard/widgets/recent_section.dart';
+
+import '/screens/dashboard/widgets/dashboard_course.dart';
+import '/screens/dashboard/widgets/recent_section.dart';
+import '../admin/admin_section.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
@@ -36,11 +41,16 @@ class Dashboard extends StatelessWidget {
                 });
               },
             ),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
+      body: Container(
+        width: size.width,
+        padding: EdgeInsets.symmetric(
+            horizontal: !isSmallScreen ? size.width * .1 : 0),
         child: SingleChildScrollView(
           child: Column(
             children: const [
+              //admin
+              AdminSection(),
+
               //recent
               RecentSection(),
 

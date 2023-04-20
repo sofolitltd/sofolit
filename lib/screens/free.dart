@@ -9,7 +9,7 @@ class Free extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Free'),
       ),
-      body: const Center(child: Text('No data found')),
+      body: const Center(child: Text('Update coming soon...')),
     );
   }
 }

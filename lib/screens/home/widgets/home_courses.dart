@@ -74,12 +74,12 @@ class HomeCourses extends StatelessWidget {
                       ),
                     ),
 
-                    //
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: TextButton(
-                          onPressed: () {}, child: const Text('See more')),
-                    ),
+                    // todo:
+                    // Padding(
+                    //   padding: const EdgeInsets.only(right: 8),
+                    //   child: TextButton(
+                    //       onPressed: () {}, child: const Text('See more')),
+                    // ),
                   ],
                 ),
 
