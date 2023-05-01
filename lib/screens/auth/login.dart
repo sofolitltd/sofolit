@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '/auth/forgot_password.dart';
-import '/auth/sing_up.dart';
+import '/screens/auth/forgot_password.dart';
+import '/screens/auth/sign_up.dart';
 import '/screens/landing_page.dart';
 
 class Login extends StatelessWidget {
@@ -90,13 +90,16 @@ class _Div2State extends State<Div2> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool inProgress = false;
+  bool _isObscure = true;
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+
+    final isSmallScreen = size.width < 600;
     return Form(
       key: _globalKey,
-      child: Container(
+      child: Padding(
         padding:
             EdgeInsets.symmetric(vertical: 16, horizontal: size.width * .05),
         child: Column(
@@ -127,17 +130,27 @@ class _Div2State extends State<Div2> {
             const SizedBox(height: 4),
             TextFormField(
               controller: _passwordController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                border: OutlineInputBorder(),
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                border: const OutlineInputBorder(),
                 hintText: '********',
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() => _isObscure = !_isObscure);
+                  },
+                  icon: Icon(
+                    _isObscure
+                        ? Icons.visibility_off_outlined
+                        : Icons.remove_red_eye_outlined,
+                  ),
+                ),
               ),
               validator: (value) {
                 if (value!.isEmpty) return 'Enter password';
                 return null;
               },
-              obscureText: true,
+              obscureText: _isObscure,
             ),
 
             const SizedBox(height: 24),

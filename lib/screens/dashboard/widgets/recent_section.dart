@@ -75,7 +75,7 @@ class RecentSection extends StatelessWidget {
 
                         return Container(
                           height: 150,
-                          width: 350,
+                          width: 300,
                           padding: const EdgeInsets.symmetric(
                             vertical: 8,
                             horizontal: 12,

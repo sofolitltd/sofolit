@@ -27,10 +27,11 @@ class DTFormatter {
   }
 
   // time
-  static dayFormat(timestamp) {
-    String t = '';
-    var tm = timestamp as Timestamp;
-    t = DateFormat('dd').format(tm.toDate());
-    return t.toString();
+  static remainingDay(timestamp) {
+    DateTime t;
+    Timestamp ts = timestamp as Timestamp;
+    DateTime dateTime = ts.toDate();
+    t = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    return t;
   }
 }

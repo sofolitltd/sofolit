@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '/auth/login.dart';
+import '/screens/auth/login.dart';
 import 'screens/landing_page.dart';
 
 class WrapperScreen extends StatelessWidget {

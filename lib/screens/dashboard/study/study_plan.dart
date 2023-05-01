@@ -20,7 +20,7 @@ class _StudyPlanState extends State<StudyPlan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: kIsWeb
+      floatingActionButton: !kIsWeb
           ? null
           : FloatingActionButton(
               onPressed: () {
@@ -162,17 +162,18 @@ class _StudyCardState extends State<StudyCard> {
                 ),
                 Row(
                   children: [
-                    if (widget.data.get('meeting') != '')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12, right: 10),
+                    if (widget.data.get('recording') == '' &&
+                        widget.data.get('resource') == '')
+                      Container(
+                        margin: const EdgeInsets.only(top: 12, right: 10),
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.yellow,
+                            backgroundColor: Colors.red,
                             minimumSize: const Size(48, 40),
                           ),
                           icon: const Icon(
                             Icons.video_call_outlined,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                           onPressed: () {
                             OpenApp.withUrl(widget.data.get('meeting'));
@@ -180,7 +181,7 @@ class _StudyCardState extends State<StudyCard> {
                           label: const Text(
                             'Live Class',
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -188,18 +189,20 @@ class _StudyCardState extends State<StudyCard> {
 
                     //
                     if (widget.data.get('recording') != '')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
+                      Container(
+                        margin: const EdgeInsets.only(top: 12, right: 10),
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.greenAccent.shade200,
+                            backgroundColor: Colors.orange.shade50,
                             minimumSize: const Size(48, 40),
                           ),
                           icon: const Icon(
                             Icons.drive_file_move_outlined,
                             color: Colors.black,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            OpenApp.withUrl(widget.data.get('recording'));
+                          },
                           label: const Text(
                             'Recoding',
                             style: TextStyle(
@@ -211,8 +214,8 @@ class _StudyCardState extends State<StudyCard> {
 
                     //
                     if (widget.data.get('resource') != '')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12, left: 10),
+                      Container(
+                        margin: const EdgeInsets.only(top: 12),
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue.shade50,
@@ -222,7 +225,9 @@ class _StudyCardState extends State<StudyCard> {
                             Icons.link_outlined,
                             color: Colors.black,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            OpenApp.withUrl(widget.data.get('resource'));
+                          },
                           label: const Text(
                             'Resource',
                             style: TextStyle(

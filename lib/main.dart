@@ -1,17 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sofolit/screens/splash.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'firebase_options.dart';
 
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await FCMUtils().initialize();
 
   //remove #
   setPathUrlStrategy();
@@ -62,22 +66,22 @@ class MyApp extends StatelessWidget {
 }
 
 /// A page that fades in an out.
-class FadeTransitionPage extends CustomTransitionPage<void> {
-  /// Creates a [FadeTransitionPage].
-  FadeTransitionPage({
-    required LocalKey key,
-    required Widget child,
-  }) : super(
-            key: key,
-            transitionsBuilder: (BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                    Widget child) =>
-                FadeTransition(
-                  opacity: animation.drive(_curveTween),
-                  child: child,
-                ),
-            child: child);
-
-  static final CurveTween _curveTween = CurveTween(curve: Curves.easeIn);
-}
+// class FadeTransitionPage extends CustomTransitionPage<void> {
+//   /// Creates a [FadeTransitionPage].
+//   FadeTransitionPage({
+//     required LocalKey key,
+//     required Widget child,
+//   }) : super(
+//             key: key,
+//             transitionsBuilder: (BuildContext context,
+//                     Animation<double> animation,
+//                     Animation<double> secondaryAnimation,
+//                     Widget child) =>
+//                 FadeTransition(
+//                   opacity: animation.drive(_curveTween),
+//                   child: child,
+//                 ),
+//             child: child);
+//
+//   static final CurveTween _curveTween = CurveTween(curve: Curves.easeIn);
+// }

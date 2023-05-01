@@ -242,13 +242,34 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
                       setState(() {
                         _isProgress = true;
                       });
-
-                      //
                       var ref = FirebaseFirestore.instance
                           .collection('courses')
-                          .doc(widget.uid)
-                          .collection('study');
-                      await ref.doc().set({
+                          .doc(widget.uid);
+
+                      // record
+                      if (_recordingController.text.trim().isNotEmpty) {
+                        await ref.collection('recoding').doc().set({
+                          'class': int.parse(_classController.text.trim()),
+                          'title': _titleController.text.trim(),
+                          'description': _descriptionController.text.trim(),
+                          'url': _recordingController.text.trim(),
+                          'duration': '28 min',
+                          'time': DateTime.now(),
+                        });
+                      }
+
+                      //resource
+                      if (_recordingController.text.trim().isNotEmpty) {
+                        await ref.collection('resource').doc().set({
+                          'title': 'Figma ',
+                          'description': 'Learn about figma',
+                          'url': '',
+                          'time': DateTime.now(),
+                        });
+                      }
+
+                      // study
+                      await ref.collection('study').doc().set({
                         'class': int.parse(_classController.text.trim()),
                         'title': _titleController.text.trim(),
                         'description': _descriptionController.text.trim(),
@@ -256,7 +277,9 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
                             ? _meetingController.text.trim()
                             : 'https://us04web.zoom.us/j/5583151538?pwd=Tk1zMmc2WWpuYW9mZXNCLzVFYXFxdz09',
                         'resource': _resourceController.text.trim() ?? '',
-                        'recording': _recordingController.text.trim() ?? '',
+                        'recording': _recordingController.text.trim().isEmpty
+                            ? ''
+                            : _recordingController.text.trim(),
                         'time': _selectedDateTime,
                       }).then((value) {
                         setState(() {

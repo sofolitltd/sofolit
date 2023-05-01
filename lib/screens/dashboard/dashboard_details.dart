@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '/screens/dashboard/assignment/assignment.dart';
-import '/screens/leaderboard.dart';
-import '/ui/recording.dart';
-import '/ui/resource.dart';
+import '/screens/dashboard/assignments/assignments.dart';
+import 'leaderboard/leaderboard.dart';
+import 'recordings/recordings.dart';
+import 'resources.dart';
 import 'study/study_plan.dart';
 
 class DashboardDetails extends StatelessWidget {
@@ -29,9 +29,13 @@ class DashboardDetails extends StatelessWidget {
               horizontal: !isSmallScreen ? size.width * .2 : 0),
           child: Column(
             children: [
+              const SizedBox(height: 16),
+
+              //
               Container(
                 color: Colors.white,
-                margin: const EdgeInsets.all(16),
+                margin:
+                    EdgeInsets.symmetric(horizontal: !isSmallScreen ? 16 : 0),
                 alignment: Alignment.centerLeft,
                 child: const TabBar(
                   labelColor: Colors.black,
@@ -50,10 +54,10 @@ class DashboardDetails extends StatelessWidget {
                 child: TabBarView(
                   children: [
                     StudyPlan(uid: uid),
-                    Assignment(uid: uid),
+                    Assignments(uid: uid),
                     Leaderboard(uid: uid),
-                    Recording(uid: uid),
-                    Resource(uid: uid),
+                    Recordings(uid: uid),
+                    Resources(uid: uid),
                   ],
                 ),
               ),

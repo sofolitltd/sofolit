@@ -1,11 +1,60 @@
+import 'package:basic_utils/basic_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class Leaderboard extends StatelessWidget {
+class Leaderboard extends StatefulWidget {
   const Leaderboard({Key? key, required this.uid}) : super(key: key);
   final String uid;
+
+  @override
+  State<Leaderboard> createState() => _LeaderboardState();
+}
+
+class _LeaderboardState extends State<Leaderboard> {
+  @override
+  void initState() {
+    super.initState();
+    var ref = FirebaseFirestore.instance.collection('courses').doc(widget.uid);
+
+    Set subscribers = {};
+    int sum = 0;
+    List<int> marks = [];
+    //
+    ref.collection('assignment').get().then((ass) {
+      ass.docs.forEach((assDoc) {
+        assDoc.reference.collection('subscribers').get().then((subs) {
+          subs.docs.forEach((sub) {
+            subscribers.add(sub.id);
+            print(subscribers);
+
+            //add sub
+            marks.add(sub.get('marks'));
+
+            //
+            for (var subscriber in subscribers) {
+              //
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(subscriber)
+                  .get()
+                  .then((doc) {
+                var name = doc.get('name');
+
+                //
+                ref.collection('leaderboard').doc(doc.id).set({
+                  'name': name,
+                  'point': 0,
+                  'uid': doc.id,
+                });
+              });
+            }
+          });
+        });
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,21 +66,62 @@ class Leaderboard extends StatelessWidget {
               onPressed: () {
                 var ref = FirebaseFirestore.instance
                     .collection('courses')
-                    .doc(uid)
-                    .collection('leaderboard');
-                ref.doc().set({
-                  'name': 'Figma ',
-                  'position': 1,
-                  'point': '',
-                  'uid': '',
-                  // 'uid': 'FirebaseAuth.instance.currentUser!.uid',
+                    .doc(widget.uid);
+
+                Set subscribers = {};
+                int sum = 0;
+                List<int> marks = [];
+                //
+                ref.collection('assignment').get().then((ass) {
+                  ass.docs.forEach((assDoc) {
+                    assDoc.reference
+                        .collection('subscribers')
+                        .get()
+                        .then((subs) {
+                      subs.docs.forEach((sub) {
+                        subscribers.add(sub.id);
+                        print(subscribers);
+
+                        //add sub
+                        marks.add(sub.get('marks'));
+
+                        //count total
+                        for (var i in marks) {
+                          sum += i;
+                        }
+                        print(marks);
+                        print(sum);
+
+                        //
+                        for (var subscriber in subscribers) {
+                          //
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(subscriber)
+                              .get()
+                              .then((doc) {
+                            var name = doc.get('name');
+
+                            //
+                            ref.collection('leaderboard').doc(doc.id).set({
+                              'name': name,
+                              'point': 0,
+                              'uid': doc.id,
+                            });
+                          });
+                        }
+                      });
+                    });
+                  });
                 });
+
+                //
               },
             ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')
-              .doc(uid)
+              .doc(widget.uid)
               .collection('leaderboard')
               .orderBy('point')
               .snapshots(),
@@ -53,7 +143,7 @@ class Leaderboard extends StatelessWidget {
               );
             }
             return Container(
-              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               decoration: BoxDecoration(
                 border: Border.all(color: Theme.of(context).dividerColor),
                 borderRadius: BorderRadius.circular(8),
@@ -89,11 +179,20 @@ class Leaderboard extends StatelessWidget {
                             : Theme.of(context).cardColor,
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 24,
+                            horizontal: 16,
                             vertical: 8,
                           ),
-                          leading: Text('${index + 1}'),
-                          title: Text(data[index].get('name')),
+                          minLeadingWidth: 0,
+                          leading: Text(
+                            '${index + 1}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          title: Text(StringUtils.capitalize(
+                              '${data[index].get('name')}',
+                              allWords: true)),
                           trailing: FittedBox(
                             child: Column(
                               children: [
@@ -103,7 +202,7 @@ class Leaderboard extends StatelessWidget {
                                     '${data[index].get('point')}',
                                     style: Theme.of(context)
                                         .textTheme
-                                        .titleMedium!
+                                        .titleLarge!
                                         .copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),

@@ -86,7 +86,7 @@ class _AddAssignmentState extends State<AddAssignment> {
               ),
               const SizedBox(height: 16),
 
-              //d
+              //des
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 5,
@@ -98,6 +98,7 @@ class _AddAssignmentState extends State<AddAssignment> {
                   label: Text('Description'),
                 ),
                 keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.none,
                 textCapitalization: TextCapitalization.sentences,
                 validator: (value) => value!.isEmpty ? 'Enter message' : null,
               ),
@@ -202,6 +203,7 @@ class _AddAssignmentState extends State<AddAssignment> {
                         'status': 'Pending',
                         'marks': int.parse(_marksController.text.trim()),
                         'time': _selectedDateTime,
+                        'feedback': '',
                       }).then((value) {
                         setState(() {
                           _isProgress = false;

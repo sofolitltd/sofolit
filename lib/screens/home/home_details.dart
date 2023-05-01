@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../utils/date_time_formatter.dart';
@@ -35,6 +36,7 @@ class HomeDetails extends StatelessWidget {
                 child: Container(
                   color: Colors.white,
                   padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -94,26 +96,35 @@ class HomeDetails extends StatelessWidget {
                                   color: Colors.red.shade50,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.watch_later_outlined,
-                                      size: 20,
-                                    ),
+                                child: CountdownTimer(
+                                  endTime: DTFormatter.remainingDay(
+                                          data.get('lastDate'))
+                                      .millisecondsSinceEpoch,
+                                  widgetBuilder: (context, time) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.watch_later_outlined,
+                                          size: 20,
+                                        ),
 
-                                    const SizedBox(height: 4),
+                                        const SizedBox(height: 4),
 
-                                    //
-                                    //todo:
-                                    Text(
-                                      '${DTFormatter.dayFormat(data.get('lastDate'))} Days Remaining',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(),
-                                    ),
-                                  ],
+                                        //
+                                        Text(
+                                          time == null
+                                              ? 'On going'
+                                              : '${time.days} days remaining',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -354,6 +365,7 @@ approvedUser(data) {
   });
 }
 
+//
 class CompletePayment extends StatefulWidget {
   const CompletePayment({Key? key, required this.data}) : super(key: key);
 
@@ -387,53 +399,58 @@ class _CompletePaymentState extends State<CompletePayment> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              //
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.symmetric(vertical: 16),
                   color: Theme.of(context).cardColor,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Mobile No'),
-                      const SizedBox(height: 4),
-                      TextFormField(
-                        controller: _mobileController,
-                        decoration: const InputDecoration(
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          border: OutlineInputBorder(),
-                          hintText: 'Mobile No',
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: !isSmallScreen ? 50 : 0,
+                      vertical: !isSmallScreen ? 50 : 0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Mobile No'),
+                        const SizedBox(height: 4),
+                        TextFormField(
+                          controller: _mobileController,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            border: OutlineInputBorder(),
+                            hintText: 'Mobile No',
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value!.isEmpty) return 'Enter mobile no';
+                            return null;
+                          },
                         ),
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value!.isEmpty) return 'Enter mobile no';
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('Transaction Id'),
-                      const SizedBox(height: 4),
-                      TextFormField(
-                        controller: _transactionController,
-                        decoration: const InputDecoration(
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          border: OutlineInputBorder(),
-                          hintText: 'Transaction Id',
+                        const SizedBox(height: 16),
+                        const Text('Transaction Id'),
+                        const SizedBox(height: 4),
+                        TextFormField(
+                          controller: _transactionController,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            border: OutlineInputBorder(),
+                            hintText: 'Transaction Id',
+                          ),
+                          keyboardType: TextInputType.text,
+                          validator: (value) {
+                            if (value!.isEmpty) return 'Enter Transaction Id';
+                            return null;
+                          },
                         ),
-                        keyboardType: TextInputType.text,
-                        validator: (value) {
-                          if (value!.isEmpty) return 'Enter Transaction Id';
-                          return null;
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-
-              const SizedBox(height: 10),
 
               //
               Card(

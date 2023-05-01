@@ -77,84 +77,86 @@ class ProfileCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              SizedBox(
-                height: 120,
-                child: Card(
-                  elevation: 0,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: data.get('image') == ''
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(
-                                        data.get('image'),
-                                      ),
+              //
+              Card(
+                elevation: 0,
+                margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //
+                      SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: data.get('image') == ''
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                      data.get('image'),
                                     ),
                                   ),
                                 ),
-                        ),
-
-                        const SizedBox(width: 16),
-
-                        //
-                        Expanded(
-                          flex: 4,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // name
-                              Text(
-                                StringUtils.capitalize(data.get('name'),
-                                    allWords: true),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(fontWeight: FontWeight.bold),
                               ),
+                      ),
 
-                              //todo: edit profile
-                              // SizedBox(
-                              //   width: double.infinity,
-                              //   child: ElevatedButton(
-                              //       style: ElevatedButton.styleFrom(
-                              //         minimumSize: const Size(150, 45),
-                              //       ),
-                              //       onPressed: () {
-                              //         // Navigator.push(
-                              //         //     context,
-                              //         //     MaterialPageRoute(
-                              //         //         builder: (context) =>
-                              //         //             EditProfile(data: data)));
-                              //       },
-                              //       child: const Text('Edit profile')),
-                              // ),
-                            ],
-                          ),
+                      const SizedBox(width: 16),
+
+                      //
+                      Expanded(
+                        flex: 4,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // name
+                            Text(
+                              StringUtils.capitalize(data.get('name'),
+                                  allWords: true),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+
+                            //todo: edit profile
+                            // SizedBox(
+                            //   width: double.infinity,
+                            //   child: ElevatedButton(
+                            //       style: ElevatedButton.styleFrom(
+                            //         minimumSize: const Size(150, 45),
+                            //       ),
+                            //       onPressed: () {
+                            //         // Navigator.push(
+                            //         //     context,
+                            //         //     MaterialPageRoute(
+                            //         //         builder: (context) =>
+                            //         //             EditProfile(data: data)));
+                            //       },
+                            //       child: const Text('Edit profile')),
+                            // ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+
               const SizedBox(height: 8),
 
               // email

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/home/widgets/home_courses.dart';
+
+import '/screens/home/widgets/home_courses.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);

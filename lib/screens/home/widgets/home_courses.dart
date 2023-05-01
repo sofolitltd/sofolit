@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/home/home_details.dart';
-import 'package:sofolit/utils/date_time_formatter.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+
+import '/screens/home/home_details.dart';
+import '/utils/date_time_formatter.dart';
 
 class HomeCourses extends StatelessWidget {
   const HomeCourses({Key? key}) : super(key: key);
@@ -245,28 +247,34 @@ class CourseCard extends StatelessWidget {
 
                               const SizedBox(width: 4),
 
-                              //time
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.watch_later_outlined,
-                                    size: 20,
-                                  ),
+                              //remaining
+                              CountdownTimer(
+                                endTime: DTFormatter.remainingDay(
+                                        data.get('lastDate'))
+                                    .millisecondsSinceEpoch,
+                                widgetBuilder: (context, time) {
+                                  return Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.watch_later_outlined,
+                                        size: 20,
+                                      ),
 
-                                  const SizedBox(width: 4),
-
-                                  //todo:
-                                  FittedBox(
-                                    child: Text(
-                                      '${DTFormatter.dayFormat(data.get('lastDate'))} days remaining',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(),
-                                    ),
-                                  ),
-                                ],
+                                      const SizedBox(width: 4),
+                                      //
+                                      Text(
+                                        time == null
+                                            ? 'On going'
+                                            : '${time.days} days remaining',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ],
                           ),
