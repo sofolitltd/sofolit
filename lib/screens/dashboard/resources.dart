@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/screens/admin/admin_button.dart';
 import 'package:sofolit/utils/open_app.dart';
 
 import '../../utils/date_time_formatter.dart';
@@ -12,22 +12,20 @@ class Resources extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: kIsWeb
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                var ref = FirebaseFirestore.instance
-                    .collection('courses')
-                    .doc(uid)
-                    .collection('resource');
-                ref.doc().set({
-                  'title': 'Figma ',
-                  'description': 'Learn about figma',
-                  'url': '',
-                  'time': DateTime.now(),
-                });
-              },
-            ),
+      floatingActionButton: AdminButton(
+        onPressed: () {
+          //   var ref = FirebaseFirestore.instance
+          //       .collection('courses')
+          //       .doc(uid)
+          //       .collection('resource');
+          //   ref.doc().set({
+          //     'title': 'Figma ',
+          //     'description': 'Learn about figma',
+          //     'url': '',
+          //     'time': DateTime.now(),
+          //   });
+        },
+      ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')

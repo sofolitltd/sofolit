@@ -23,8 +23,8 @@ class Login extends StatelessWidget {
                   child: Div1(),
                 ),
                 Expanded(
-                  flex: 3,
-                  child: Div2(),
+                  flex: 4,
+                  child: Center(child: Div2()),
                 ),
               ],
             )
@@ -33,12 +33,13 @@ class Login extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Expanded(
-                  flex: 1,
+                  flex: 3,
                   child: Div1(),
                 ),
                 Expanded(
-                  flex: 1,
-                  child: Padding(
+                  flex: 3,
+                  child: Container(
+                    alignment: Alignment.center,
                     padding: EdgeInsets.all(size.width * .05),
                     child: const Div2(),
                   ),
@@ -99,166 +100,134 @@ class _Div2State extends State<Div2> {
     final isSmallScreen = size.width < 600;
     return Form(
       key: _globalKey,
-      child: Padding(
-        padding:
-            EdgeInsets.symmetric(vertical: 16, horizontal: size.width * .05),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 32),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding:
+              EdgeInsets.symmetric(vertical: 16, horizontal: size.width * .05),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
 
-            const Text('Email Address'),
-            const SizedBox(height: 4),
+              const Text('Email Address'),
+              const SizedBox(height: 4),
 
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                border: OutlineInputBorder(),
-                hintText: 'Email address',
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  border: OutlineInputBorder(),
+                  hintText: 'Email address',
+                ),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value!.isEmpty) return 'Enter email';
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value!.isEmpty) return 'Enter email';
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            const Text('Password'),
-            const SizedBox(height: 4),
-            TextFormField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                border: const OutlineInputBorder(),
-                hintText: '********',
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() => _isObscure = !_isObscure);
-                  },
-                  icon: Icon(
-                    _isObscure
-                        ? Icons.visibility_off_outlined
-                        : Icons.remove_red_eye_outlined,
+              const SizedBox(height: 16),
+              const Text('Password'),
+              const SizedBox(height: 4),
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  border: const OutlineInputBorder(),
+                  hintText: '********',
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() => _isObscure = !_isObscure);
+                    },
+                    icon: Icon(
+                      _isObscure
+                          ? Icons.visibility_off_outlined
+                          : Icons.remove_red_eye_outlined,
+                    ),
                   ),
                 ),
+                validator: (value) {
+                  if (value!.isEmpty) return 'Enter password';
+                  return null;
+                },
+                obscureText: _isObscure,
               ),
-              validator: (value) {
-                if (value!.isEmpty) return 'Enter password';
-                return null;
-              },
-              obscureText: _isObscure,
-            ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            //login
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (_globalKey.currentState!.validate()) {
-                    try {
-                      setState(() {
-                        inProgress = true;
-                      });
-                      final credential = await FirebaseAuth.instance
-                          .signInWithEmailAndPassword(
-                        email: _emailController.text.trim(),
-                        password: _passwordController.text,
-                      );
+              //login
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_globalKey.currentState!.validate()) {
+                      try {
+                        setState(() {
+                          inProgress = true;
+                        });
+                        final credential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text,
+                        );
 
-                      if (credential.user == null) return;
+                        if (credential.user == null) return;
 
-                      //
-                      if (!mounted) return;
-                      setState(() {
-                        inProgress = false;
-                      });
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LandingPage()),
-                          (route) => false);
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'user-not-found') {
-                        Fluttertoast.showToast(
-                            msg: 'No user found for that email.');
+                        //
+                        if (!mounted) return;
                         setState(() {
                           inProgress = false;
                         });
-                      } else if (e.code == 'wrong-password') {
-                        Fluttertoast.showToast(
-                            msg: 'Wrong password provided for that user.');
-                        setState(() {
-                          inProgress = false;
-                        });
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LandingPage()),
+                            (route) => false);
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'user-not-found') {
+                          Fluttertoast.showToast(
+                              msg: 'No user found for that email.');
+                          setState(() {
+                            inProgress = false;
+                          });
+                        } else if (e.code == 'wrong-password') {
+                          Fluttertoast.showToast(
+                              msg: 'Wrong password provided for that user.');
+                          setState(() {
+                            inProgress = false;
+                          });
+                        }
                       }
                     }
-                  }
-                },
-                child: inProgress
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(color: Colors.white))
-                    : const Text('Login'),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // forgot pass
-            Align(
-              alignment: Alignment.center,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ForgotPassword(),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Forgot password?',
-                  style: TextStyle(
-                    color: Colors.transparent,
-                    height: 1.5,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Colors.black,
-                    shadows: [
-                      Shadow(color: Colors.black, offset: Offset(0, -3))
-                    ],
-                  ),
+                  },
+                  child: inProgress
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(color: Colors.white))
+                      : const Text('Login'),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Don\'t have an account?',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-                TextButton(
+              const SizedBox(height: 16),
+
+              // forgot pass
+              Align(
+                alignment: Alignment.center,
+                child: TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SignUp(),
+                        builder: (context) => const ForgotPassword(),
                       ),
                     );
                   },
                   child: const Text(
-                    'Sign up here.',
+                    'Forgot password?',
                     style: TextStyle(
                       color: Colors.transparent,
                       height: 1.5,
@@ -270,9 +239,44 @@ class _Div2State extends State<Div2> {
                     ),
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Don\'t have an account?',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUp(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Sign up here.',
+                      style: TextStyle(
+                        color: Colors.transparent,
+                        height: 1.5,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.black,
+                        shadows: [
+                          Shadow(color: Colors.black, offset: Offset(0, -3))
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

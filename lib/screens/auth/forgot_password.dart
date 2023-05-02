@@ -42,8 +42,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         child: Container(
           color: Theme.of(context).cardColor,
           padding: EdgeInsets.symmetric(
-            horizontal: !isSmallScreen ? 50 : 0,
-            vertical: !isSmallScreen ? 50 : 0,
+            horizontal: !isSmallScreen ? 50 : 16,
+            vertical: !isSmallScreen ? 50 : 16,
           ),
           child: Form(
             key: _formKey,

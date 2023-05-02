@@ -12,10 +12,12 @@ class Home extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(
-          'assets/logo/logo_black.png',
-          height: 40,
-        ),
+        title: !isSmallScreen
+            ? const Text('Home')
+            : Image.asset(
+                'assets/logo/logo_black.png',
+                height: 40,
+              ),
       ),
       body: SingleChildScrollView(
         child: Padding(

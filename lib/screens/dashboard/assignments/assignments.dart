@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/dashboard/assignments/assignment_details.dart';
+import 'package:sofolit/screens/admin/admin_button.dart';
 
 import '/screens/dashboard/assignments/add_assignment.dart';
+import '/screens/dashboard/assignments/assignment_details.dart';
 import '/utils/date_time_formatter.dart';
 
 class Assignments extends StatelessWidget {
@@ -14,17 +14,12 @@ class Assignments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: kIsWeb
-          ? null
-          : FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddAssignment(uid: uid)));
-              },
-            ),
+      floatingActionButton: AdminButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddAssignment(uid: uid)));
+        },
+      ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')
@@ -72,15 +67,26 @@ class AssignmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String status = 'Pending';
+    String feedback = '';
+    int obtainMark = 0;
+    int totalMark = 0;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AssignmentDetails(
-                      data: data,
-                      uid: uid,
-                    )));
+          context,
+          MaterialPageRoute(
+            builder: (context) => AssignmentDetails(
+              data: data,
+              uid: uid,
+              status: status,
+              obtainMark: obtainMark,
+              totalMark: totalMark,
+              feedback: feedback,
+            ),
+          ),
+        );
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -108,48 +114,49 @@ class AssignmentCard extends StatelessWidget {
             ListTile(
               trailing: Container(
                   padding: const EdgeInsets.symmetric(
-                    vertical: 2,
-                    horizontal: 4,
+                    vertical: 4,
+                    horizontal: 6,
                   ),
                   decoration: BoxDecoration(
+                    color: Colors.yellow.shade100,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.yellow),
                   ),
                   child: const Icon(Icons.remove_red_eye_outlined)),
               title: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 4.0),
                 child: Text(data.get('title')),
               ),
-              subtitle: StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('courses')
-                      .doc(uid)
-                      .collection('assignment')
-                      .doc(data.id)
-                      .collection('subscribers')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
-                        padding: const EdgeInsets.all(10),
-                      );
-                    }
+              subtitle: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('courses')
+                    .doc(uid)
+                    .collection('assignments')
+                    .where('assignmentId', isEqualTo: data.id)
+                    .where('uid',
+                        isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(height: 44);
+                  }
 
-                    if (!snapshot.hasData) {
-                      return Container(
-                        padding: const EdgeInsets.all(10),
-                      );
-                    }
+                  if (!snapshot.hasData) {
+                    return const SizedBox(height: 44);
+                  }
 
-                    var status = 'Pending';
-                    int? obtainMark;
-                    if (snapshot.data!.exists) {
-                      status = snapshot.data!.get('status');
-                      obtainMark = snapshot.data!.get('marks');
+                  for (var doc in snapshot.data!.docs) {
+                    if (doc.exists) {
+                      status = doc.get('status');
+                      obtainMark = doc.get('obtainMark');
+                      totalMark = doc.get('totalMark');
+                      feedback = doc.get('feedback');
                     }
+                  }
 
-                    return Row(
+                  return SizedBox(
+                    height: 44,
+                    child: Row(
                       children: [
                         // status
                         Container(
@@ -165,7 +172,7 @@ class AssignmentCard extends StatelessWidget {
                                 ? Colors.orange.shade500
                                 : status == 'Submitted'
                                     ? Colors.blue.shade500
-                                    : Colors.green.shade500,
+                                    : null,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
@@ -177,7 +184,10 @@ class AssignmentCard extends StatelessWidget {
                                         ? Icons.upload_file_outlined
                                         : Icons.fact_check_outlined,
                                 size: 16,
-                                color: Colors.white,
+                                color: (status == 'Pending' ||
+                                        status == 'Submitted')
+                                    ? Colors.white
+                                    : Colors.green,
                               ),
 
                               const SizedBox(width: 4),
@@ -185,7 +195,12 @@ class AssignmentCard extends StatelessWidget {
                               //
                               Text(
                                 status,
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: (status == 'Pending' ||
+                                          status == 'Submitted')
+                                      ? Colors.white
+                                      : Colors.green,
+                                ),
                               ),
                             ],
                           ),
@@ -204,7 +219,7 @@ class AssignmentCard extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurpleAccent.shade200,
+                              color: Colors.green,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Row(
@@ -220,7 +235,7 @@ class AssignmentCard extends StatelessWidget {
 
                                 //
                                 Text(
-                                  '$obtainMark / ${data.get('marks')}',
+                                  '$obtainMark / $totalMark',
                                   style: const TextStyle(
                                     color: Colors.white,
                                   ),
@@ -229,8 +244,10 @@ class AssignmentCard extends StatelessWidget {
                             ),
                           ),
                       ],
-                    );
-                  }),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

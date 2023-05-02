@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/date_time_formatter.dart';
@@ -12,32 +11,12 @@ class Recordings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: kIsWeb
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                addRecording() {
-                  var ref = FirebaseFirestore.instance
-                      .collection('courses')
-                      .doc(uid)
-                      .collection('recoding');
-                  ref.doc().set({
-                    'class': 1,
-                    'title': 'Class 2',
-                    'description': 'Dm Tools',
-                    'url':
-                        'https://www.facebook.com/100003382574463/videos/pcb.1429073040965377/190784943724444',
-                    'duration': '28 min',
-                    'time': DateTime.now(),
-                  });
-                }
-              },
-            ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')
               .doc(uid)
               .collection('recoding')
+              .orderBy('class', descending: true)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -114,10 +93,10 @@ class ClassRecordingsCard extends StatelessWidget {
                 data.get('description'),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium!
-                    .copyWith(height: 1),
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      height: 1,
+                      color: Colors.black54,
+                    ),
               ),
             ],
           ),
@@ -128,7 +107,7 @@ class ClassRecordingsCard extends StatelessWidget {
             //
             Row(
               children: [
-                // duration
+                // class
                 Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: 2,
@@ -144,14 +123,14 @@ class ClassRecordingsCard extends StatelessWidget {
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.watch_later_outlined,
+                        Icons.play_arrow_rounded,
                         size: 16,
                       ),
 
                       const SizedBox(width: 4),
 
                       //
-                      Text(data.get('duration')),
+                      Text('Class ${data.get('class')}'),
                     ],
                   ),
                 ),

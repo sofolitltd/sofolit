@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/dashboard/study/add_study.dart';
-import 'package:sofolit/utils/date_time_formatter.dart';
-import 'package:sofolit/utils/open_app.dart';
+import 'package:sofolit/screens/admin/admin_button.dart';
+
+import '/screens/dashboard/study/add_study.dart';
+import '/utils/date_time_formatter.dart';
+import '/utils/open_app.dart';
 
 class StudyPlan extends StatefulWidget {
   const StudyPlan({Key? key, required this.uid}) : super(key: key);
@@ -20,17 +21,14 @@ class _StudyPlanState extends State<StudyPlan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: !kIsWeb
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddStudyPlan(uid: widget.uid)));
-              },
-              child: const Icon(Icons.add),
-            ),
+      floatingActionButton: AdminButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddStudyPlan(uid: widget.uid)));
+        },
+      ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')

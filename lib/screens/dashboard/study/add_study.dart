@@ -253,17 +253,6 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
                           'title': _titleController.text.trim(),
                           'description': _descriptionController.text.trim(),
                           'url': _recordingController.text.trim(),
-                          'duration': '28 min',
-                          'time': DateTime.now(),
-                        });
-                      }
-
-                      //resource
-                      if (_recordingController.text.trim().isNotEmpty) {
-                        await ref.collection('resource').doc().set({
-                          'title': 'Figma ',
-                          'description': 'Learn about figma',
-                          'url': '',
                           'time': DateTime.now(),
                         });
                       }
@@ -276,7 +265,9 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
                         'meeting': _meetingController.text.trim().isNotEmpty
                             ? _meetingController.text.trim()
                             : 'https://us04web.zoom.us/j/5583151538?pwd=Tk1zMmc2WWpuYW9mZXNCLzVFYXFxdz09',
-                        'resource': _resourceController.text.trim() ?? '',
+                        'resource': _resourceController.text.trim().isEmpty
+                            ? ''
+                            : _resourceController.text.trim(),
                         'recording': _recordingController.text.trim().isEmpty
                             ? ''
                             : _recordingController.text.trim(),

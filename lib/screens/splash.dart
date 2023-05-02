@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sofolit/wrapper.dart';
+
+import '../wrapper.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -31,13 +32,12 @@ class _SplashState extends State<Splash> {
               'assets/logo/logo_black.png',
               height: 50,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
             const SizedBox(
-              height: 32,
-              width: 32,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              height: 8,
+              width: 120,
+              child: LinearProgressIndicator(),
             ),
-            const SizedBox(height: 24),
           ],
         ),
       ),
