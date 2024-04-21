@@ -49,7 +49,7 @@ class StatusTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('payment')
+            .collection('payments')
             .where('status', isEqualTo: title)
             .snapshots(),
         builder: (context, snapshot) {
@@ -70,14 +70,15 @@ class StatusTabs extends StatelessWidget {
             );
           }
           return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemBuilder: (context, index) {
-                return OrderCard(data: data[index], title: title);
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(height: 8);
-              },
-              itemCount: data.length);
+            padding: const EdgeInsets.all(16),
+            itemBuilder: (context, index) {
+              return OrderCard(data: data[index], title: title);
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 8);
+            },
+            itemCount: data.length,
+          );
         });
   }
 }
@@ -114,8 +115,8 @@ class _OrderCardState extends State<OrderCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  '${widget.data.get('batch')} - ${widget.data.get('courseTitle')}'),
-              Text('User: ${widget.data.get('email')}'),
+                  '${widget.data.get('courseBatch')} - ${widget.data.get('courseTitle')}'),
+              Text('User: ${widget.data.get('userEmail')}'),
               const SizedBox(height: 8),
               Container(
                 padding:
@@ -129,7 +130,7 @@ class _OrderCardState extends State<OrderCard> {
                           : Colors.red.shade400,
                 ),
                 child: Text(
-                  '${widget.data.get('status')}',
+                  StringUtils.capitalize(widget.data.get('status')),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
@@ -180,13 +181,12 @@ class _OrderCardDetailsState extends State<OrderCardDetails> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(widget.data.get('batch')),
-              Text(widget.data.get('courseId')),
-              Text(widget.data.get('courseTitle')),
-              Text('User: ${widget.data.get('email')}'),
+              Text('Batch: ' + widget.data.get('courseBatch')),
+              Text("Title" + widget.data.get('courseTitle')),
+              Text('User: ${widget.data.get('userEmail')}'),
               Text('Mobile: ${widget.data.get('mobile')}'),
               Text('Trans ID: ${widget.data.get('transaction')}'),
-              Text('Amount: ৳${widget.data.get('price')}'),
+              Text('Amount: ৳${widget.data.get('coursePrice')}'),
 
               const SizedBox(height: 8),
               //
@@ -226,7 +226,7 @@ class _OrderCardDetailsState extends State<OrderCardDetails> {
                           onPressed: () async {
                             // change status
                             await FirebaseFirestore.instance
-                                .collection('payment')
+                                .collection('payments')
                                 .doc(widget.data.id)
                                 .update({
                               'status': _selectedStatus.toString(),
@@ -237,34 +237,42 @@ class _OrderCardDetailsState extends State<OrderCardDetails> {
                             // add courses to user
                             var ref = FirebaseFirestore.instance
                                 .collection('users')
-                                .doc(widget.data.get('uid'));
+                                .doc(widget.data.get('userID'));
                             if (_selectedStatus == 'complete') {
                               ref.update({
                                 'courses': FieldValue.arrayUnion(
-                                    [widget.data.get('courseId')])
+                                    [widget.data.get('courseBatch')])
                               });
                             } else {
                               ref.update({
                                 'courses': FieldValue.arrayRemove(
-                                    [widget.data.get('courseId')])
+                                    [widget.data.get('courseBatch')])
                               });
                             }
 
                             // add subscribers to course
                             var ref1 = FirebaseFirestore.instance
                                 .collection('courses')
-                                .doc(widget.data.get('courseId'));
-                            if (_selectedStatus == 'complete') {
-                              ref1.update({
-                                'subscribers': FieldValue.arrayUnion(
-                                    [widget.data.get('uid')])
-                              });
-                            } else {
-                              ref1.update({
-                                'subscribers': FieldValue.arrayRemove(
-                                    [widget.data.get('uid')])
-                              });
-                            }
+                                .where('courseBatch',
+                                    isEqualTo: widget.data.get('courseBatch'));
+
+                            ref1.get().then((querySnapshot) {
+                              for (var doc in querySnapshot.docs) {
+                                if (_selectedStatus == 'complete') {
+                                  doc.reference.update({
+                                    'enrolledStudents': FieldValue.arrayUnion(
+                                        [widget.data.get('userID')])
+                                  });
+                                } else {
+                                  doc.reference.update({
+                                    'enrolledStudents': FieldValue.arrayRemove(
+                                        [widget.data.get('userID')])
+                                  });
+                                }
+                              }
+                            }).catchError((error) {
+                              print("Error getting documents: $error");
+                            });
 
                             //
                             if (!mounted) return;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 import '/screens/more/more.dart';
-import 'dashboard/dashboard.dart';
+import 'courses/courses.dart';
 import 'free.dart';
 import 'home/home.dart';
 
@@ -20,7 +20,7 @@ class _LandingPageState extends State<LandingPage> {
   //
   static const List _screens = [
     Home(),
-    Dashboard(),
+    Courses(),
     Free(),
     More(),
   ];
@@ -62,7 +62,7 @@ class _LandingPageState extends State<LandingPage> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.dashboard_outlined),
-                  label: 'Dashboard',
+                  label: 'Courses',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.fitbit_rounded),
@@ -159,7 +159,7 @@ class AppSidebarX extends StatelessWidget {
           ),
           const SidebarXItem(
             icon: Icons.dashboard_outlined,
-            label: 'Dashboard',
+            label: 'Courses',
           ),
           const SidebarXItem(
             icon: Icons.fitbit_rounded,
@@ -206,7 +206,7 @@ class _ScreensExample extends StatelessWidget {
           case 3:
             return const More();
           default:
-            return const Dashboard();
+            return const Courses();
         }
       },
     );

@@ -1,79 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/admin/admin_button.dart';
 
-import '/screens/dashboard/study/add_study.dart';
-import '/utils/date_time_formatter.dart';
-import '/utils/open_app.dart';
-
-class StudyPlan extends StatefulWidget {
-  const StudyPlan({Key? key, required this.uid}) : super(key: key);
-  final String uid;
-
-  @override
-  State<StudyPlan> createState() => _StudyPlanState();
-}
-
-class _StudyPlanState extends State<StudyPlan> {
-  bool isExpanded = false;
-  int selectedTile = -1;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: AdminButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddStudyPlan(uid: widget.uid)));
-        },
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('courses')
-              .doc(widget.uid)
-              .collection('study')
-              .orderBy('class')
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            var data = snapshot.data!.docs;
-            if (data.isEmpty) {
-              return const Center(
-                child: Text('No data found'),
-              );
-            }
-            if (!snapshot.hasData) {
-              return const Center(
-                child: Text('Something went wrong'),
-              );
-            }
-
-            return ListView.separated(
-              shrinkWrap: true,
-              itemCount: data.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-              itemBuilder: (context, index) {
-                return StudyCard(
-                  data: data[index],
-                  index: index,
-                );
-              },
-            );
-          }),
-    );
-  }
-}
+import '../../../../utils/date_time_formatter.dart';
+import '../../../../utils/open_app.dart';
 
 class StudyCard extends StatefulWidget {
-  const StudyCard({Key? key, required this.data, required this.index})
-      : super(key: key);
+  const StudyCard({super.key, required this.data, required this.index});
 
   final QueryDocumentSnapshot data;
   final int index;
@@ -125,7 +57,7 @@ class _StudyCardState extends State<StudyCard> {
                   children: [
                     const Icon(Icons.calendar_month_outlined, size: 16),
                     const SizedBox(width: 4),
-                    Text(DTFormatter.dateFormat(widget.data.get('time'))),
+                    Text(DTFormatter.dateWithDay(widget.data.get('time'))),
                   ],
                 ),
 

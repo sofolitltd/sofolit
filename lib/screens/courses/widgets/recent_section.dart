@@ -146,7 +146,7 @@ class RecentSection1 extends StatelessWidget {
           //
           //                     //
           //                     Text(
-          //                       data[index].get('course'),
+          //                       data[index].get('courses'),
           //                       maxLines: 1,
           //                       overflow: TextOverflow.ellipsis,
           //                       style: Theme.of(context)
@@ -427,7 +427,7 @@ class RecentSection extends StatelessWidget {
 
                               //
                               Text(
-                                data[index].get('course'),
+                                data[index].get('courses'),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)

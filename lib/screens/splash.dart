@@ -30,12 +30,12 @@ class _SplashState extends State<Splash> {
           children: [
             Image.asset(
               'assets/logo/logo_black.png',
-              height: 50,
+              height: 48,
             ),
             const SizedBox(height: 8),
             const SizedBox(
               height: 8,
-              width: 120,
+              width: 116,
               child: LinearProgressIndicator(),
             ),
           ],

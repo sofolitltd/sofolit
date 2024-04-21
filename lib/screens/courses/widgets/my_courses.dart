@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/home/widgets/home_courses.dart';
+import 'package:sofolit/model/course_model.dart';
 
-import '../dashboard_details.dart';
+import '../courses_details.dart';
+import '/screens/home/widgets/home_courses.dart';
 
-class DashboardCourse extends StatelessWidget {
-  const DashboardCourse({Key? key}) : super(key: key);
+class MyCourses extends StatelessWidget {
+  const MyCourses({super.key});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('courses').where(
-          'subscribers',
+          'enrolledStudents',
           arrayContainsAny: [FirebaseAuth.instance.currentUser!.uid],
         ).snapshots(),
         builder: (context, snapshot) {
@@ -60,7 +61,7 @@ class DashboardCourse extends StatelessWidget {
 
                 //
                 SizedBox(
-                  height: 260,
+                  height: 280,
                   width: MediaQuery.of(context).size.width,
                   // color: Colors.grey,
                   child: ListView.separated(
@@ -86,20 +87,23 @@ class DashboardCourse extends StatelessWidget {
 
 //card
 class CourseCard extends StatelessWidget {
-  const CourseCard({Key? key, required this.data}) : super(key: key);
+  const CourseCard({super.key, required this.data});
 
   final QueryDocumentSnapshot data;
 
   @override
   Widget build(BuildContext context) {
+    CourseModel course = CourseModel.fromJson(data);
+
     return GestureDetector(
       onTap: () {
+        //
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DashboardDetails(
+            builder: (context) => CoursesDetails(
               uid: data.id,
-              title: data.get('title'),
+              title: course.courseTitle,
             ),
           ),
         );
@@ -123,7 +127,7 @@ class CourseCard extends StatelessWidget {
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: NetworkImage(
-                      data.get('image'),
+                      course.courseImage,
                     ),
                   ),
                   color: Colors.blue.shade100,
@@ -137,36 +141,36 @@ class CourseCard extends StatelessWidget {
               //batch
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                  horizontal: 14,
+                  vertical: 12,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        vertical: 4,
-                        horizontal: 8,
+                        vertical: 2,
+                        horizontal: 10,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        data.get('batch'),
+                        course.courseBatch,
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
 
                     //title
                     Text(
-                      data.get('title'),
+                      course.courseTitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                             height: 1.3,
                           ),

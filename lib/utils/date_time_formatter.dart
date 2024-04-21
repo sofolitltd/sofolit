@@ -10,11 +10,17 @@ class DTFormatter {
     return t.toString();
   }
 
-  //date
-  static dateFormat(timestamp) {
+  //date with day
+  static dateWithDay(timestamp) {
     String t = '';
-    var tm = timestamp as Timestamp;
-    t = DateFormat('EEE, dd MMMM').format(tm.toDate());
+    t = DateFormat('dd MMMM, yyyy (EEEE)').format(timestamp);
+    return t.toString();
+  }
+
+  // date
+  static date(timestamp) {
+    String t = '';
+    t = DateFormat('dd MMMM, yy').format(timestamp);
     return t.toString();
   }
 

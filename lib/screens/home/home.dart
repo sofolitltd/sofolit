@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../admin/admin_button.dart';
+import '/screens/home/widgets/add_course.dart';
 import '/screens/home/widgets/home_courses.dart';
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +13,15 @@ class Home extends StatelessWidget {
     final isSmallScreen = size.width < 600;
 
     return Scaffold(
+      //
+      floatingActionButton: AdminButton(
+        onPressed: () async {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddCourse()));
+        },
+      ),
+
+      //
       appBar: AppBar(
         title: !isSmallScreen
             ? const Text('Home')
@@ -19,6 +30,8 @@ class Home extends StatelessWidget {
                 height: 40,
               ),
       ),
+
+      //
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -27,7 +40,7 @@ class Home extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              //
+              // free guideline
               Container(
                 color: Theme.of(context).cardColor,
                 margin: const EdgeInsets.only(top: 10),
@@ -129,7 +142,7 @@ class Home extends StatelessWidget {
                 ),
               ),
 
-              //
+              // live course
               const HomeCourses(),
             ],
           ),

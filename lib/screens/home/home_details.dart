@@ -1,25 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sofolit/model/course_model.dart';
 
 import '../../utils/date_time_formatter.dart';
 import '../landing_page.dart';
 
 class HomeDetails extends StatelessWidget {
-  const HomeDetails({Key? key, required this.data}) : super(key: key);
+  const HomeDetails({super.key, required this.course});
 
-  final QueryDocumentSnapshot data;
+  final CourseModel course;
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
 
+    //
+    int remainingDays =
+        course.enrollFinish.difference(course.enrollStart).inDays;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(data.get('title')),
+        title: const Text("Live Course"),
       ),
 
       //
@@ -42,13 +46,11 @@ class HomeDetails extends StatelessWidget {
                     children: [
                       //title
                       Text(
-                        data.get('title'),
+                        course.courseTitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.black54,
-                              fontSize: 28,
                               height: 1.3,
                             ),
                       ),
@@ -57,7 +59,7 @@ class HomeDetails extends StatelessWidget {
 
                       // des
                       Text(
-                        data.get('description'),
+                        course.courseDescription,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style:
@@ -76,7 +78,7 @@ class HomeDetails extends StatelessWidget {
                           image: DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(
-                              data.get('image'),
+                              course.courseImage,
                             ),
                           ),
                           color: Colors.blue.shade100,
@@ -96,35 +98,27 @@ class HomeDetails extends StatelessWidget {
                                   color: Colors.red.shade50,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: CountdownTimer(
-                                  endTime: DTFormatter.remainingDay(
-                                          data.get('lastDate'))
-                                      .millisecondsSinceEpoch,
-                                  widgetBuilder: (context, time) {
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(
-                                          Icons.watch_later_outlined,
-                                          size: 20,
-                                        ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.watch_later_outlined,
+                                      size: 20,
+                                    ),
 
-                                        const SizedBox(height: 4),
+                                    const SizedBox(height: 4),
 
-                                        //
-                                        Text(
-                                          time == null
-                                              ? 'On going'
-                                              : '${time.days} days remaining',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall!
-                                              .copyWith(),
-                                        ),
-                                      ],
-                                    );
-                                  },
+                                    //
+                                    Text(
+                                      remainingDays == 0
+                                          ? 'On going'
+                                          : '$remainingDays days remaining',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -151,7 +145,7 @@ class HomeDetails extends StatelessWidget {
 
                                     //
                                     Text(
-                                      '${data.get('seat')} Seats Left',
+                                      '${course.courseSeats - course.enrolledStudents.length} seats left',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleSmall!
@@ -166,124 +160,146 @@ class HomeDetails extends StatelessWidget {
                       ),
 
                       // schedule
-                      Row(
-                        children: [
-                          Container(
-                            width: 2,
-                            height: 175,
-                            color: Colors.deepOrange.shade400,
+                      Container(
+                        decoration: BoxDecoration(
+                          border: const Border(
+                            left: BorderSide(color: Colors.amber, width: 5),
                           ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //batch
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 2,
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.deepOrange.shade400,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '${course.courseBatch} ',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                              ),
+                            ),
 
-                          const SizedBox(width: 16),
+                            const Divider(),
 
-                          //
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              //batch
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 4,
-                                  horizontal: 16,
-                                ),
-                                decoration: BoxDecoration(
+                            // starting  day
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.watch_later_outlined,
+                                  size: 18,
                                   color: Colors.deepOrange.shade400,
-                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Text(
-                                  data.get('batch'),
+                                const SizedBox(width: 4),
+                                Text(
+                                  ' Starting Time:',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium!
                                       .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        height: 1.8,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                 ),
+                              ],
+                            ),
+
+                            Padding(
+                              padding: const EdgeInsets.only(left: 26),
+                              child: Text(
+                                '${DTFormatter.dateWithDay(course.classStartDate)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
+                            ),
 
-                              const Divider(),
+                            const Divider(),
 
-                              // starting  day
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.watch_later_outlined,
-                                    size: 20,
-                                    color: Colors.deepOrange.shade400,
-                                  ),
-                                  const Text(' Starting Time:  '),
-                                  Text(
-                                    '${DTFormatter.dateFormat(data.get('startDate'))}',
+                            // class day
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_month_rounded,
+                                  size: 16,
+                                  color: Colors.deepOrange.shade400,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  ' Class Days:',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        height: 2,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 26),
+                              child: Column(
+                                children:
+                                    course.classSchedule.map((classSchedule) {
+                                  return Text(
+                                    classSchedule,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  );
+                                }).toList(),
                               ),
-
-                              const Divider(),
-
-                              // class day
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today_outlined,
-                                    size: 20,
-                                    color: Colors.deepOrange.shade400,
-                                  ),
-                                  const Text(' Class Days:  '),
-                                  Text(
-                                    '${data.get('classDay')}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-
-                              const Divider(),
-
-                              // class time
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.watch_later_outlined,
-                                    size: 20,
-                                    color: Colors.deepOrange.shade400,
-                                  ),
-                                  const Text(' Class Time:  '),
-                                  Text(
-                                    '${data.get('classTime')}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
 
                       const SizedBox(height: 20),
 
-                      //head
-                      Text(
-                        'Payment',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-
-                      const Divider(),
-                      Text(
-                        '1. First send money to :01704340860\n(personal: bkash/rocket/nogod)'
-                        '\n2. Click on the "Join Live Batch" and send your payment mobile number and transaction id'
-                        '\n3. Then we will send a confirmation mail to your email.',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                // fontWeight: FontWeight.bold,
-                                ),
-                      ),
+                      // todo: payment
+                      if (remainingDays != 0)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Payment',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const Divider(),
+                            Text(
+                              '1. First send money to :01704340860\n(personal: bkash/rocket/nogod)'
+                              '\n2. Click on the "Join Live Batch" and send your payment mobile number and transaction id'
+                              '\n3. Then we will send a confirmation mail to your email.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      // fontWeight: FontWeight.bold,
+                                      ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
@@ -291,59 +307,82 @@ class HomeDetails extends StatelessWidget {
             ),
 
             // btn
-            Card(
-              margin: EdgeInsets.zero,
+            Container(
+              color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    //price
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        //discount
-                        Text(
-                          '৳ ${data.get('price')}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.deepOrange.shade400,
-                                    height: 1.3,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
+                    if (remainingDays != 0)
+                      //price
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          //discount
+                          Text(
+                            '৳ ${course.discountRate}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.deepOrange.shade400,
+                                  height: 1.3,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                          ),
+
+                          const SizedBox(width: 8),
+
+                          //price
+                          Text(
+                            '৳ ${course.coursePrice - (course.coursePrice * course.discountRate / 100).round()}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.3,
+                                ),
+                          ),
+                        ],
+                      ),
+
+                    if (remainingDays == 0)
+                      const Text(
+                        'Check out our upcoming batches',
+                        style: TextStyle(
+                          color: Colors.deepOrange,
                         ),
-
-                        const SizedBox(width: 8),
-
-                        //price
-                        Text(
-                          '৳ ${data.get('price') - (data.get('price') * (data.get('discount') / 100)).round()}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.titleLarge!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    height: 1.3,
-                                  ),
-                        ),
-                      ],
-                    ),
-
+                      ),
                     const SizedBox(height: 8),
 
                     //
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    CompletePayment(data: data)));
-                      },
-                      child: const Text('Join Live Batch'),
+                      onPressed: remainingDays == 0
+                          ? null
+                          : () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          CompletePayment(course: course)));
+                            },
+                      child: Text(
+                        remainingDays == 0
+                            ? 'Enrollment Closed'
+                            : 'Join Live Batch',
+                        style: TextStyle(
+                          color: remainingDays == 0 ? Colors.red : null,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -357,19 +396,19 @@ class HomeDetails extends StatelessWidget {
 }
 
 // todo
-approvedUser(data) {
-  FirebaseFirestore.instance.collection('courses').doc(data.id).update({
-    'subscribers': [
-      FirebaseAuth.instance.currentUser!.uid,
-    ],
-  });
-}
+// approvedUser(data) {
+//   FirebaseFirestore.instance.collection('courses').doc(data.id).update({
+//     'subscribers': [
+//       FirebaseAuth.instance.currentUser!.uid,
+//     ],
+//   });
+// }
 
 //
 class CompletePayment extends StatefulWidget {
-  const CompletePayment({Key? key, required this.data}) : super(key: key);
+  const CompletePayment({super.key, required this.course});
 
-  final QueryDocumentSnapshot data;
+  final CourseModel course;
 
   @override
   State<CompletePayment> createState() => _CompletePaymentState();
@@ -482,7 +521,7 @@ class _CompletePaymentState extends State<CompletePayment> {
 
                           //price
                           Text(
-                            '৳ ${widget.data.get('price') - (widget.data.get('price') * (widget.data.get('discount') / 100)).round()} ',
+                            '৳ ${widget.course.coursePrice - (widget.course.coursePrice * widget.course.discountRate / 100).round()} ',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge!
@@ -502,23 +541,23 @@ class _CompletePaymentState extends State<CompletePayment> {
                           if (_globalKey.currentState!.validate()) {
                             var user = FirebaseAuth.instance.currentUser;
                             await FirebaseFirestore.instance
-                                .collection('payment')
+                                .collection('payments')
                                 .doc()
                                 .set({
-                              'uid': user!.uid,
+                              'userID': user!.uid,
+                              'userEmail': user.email,
                               'orderId': FieldValue.increment(1),
-                              'email': user.email,
-                              'price': widget.data.get('price'),
                               'mobile': _mobileController.text.trim(),
                               'transaction': _transactionController.text.trim(),
-                              'courseId': widget.data.id,
-                              'courseTitle': widget.data.get('title'),
-                              'batch': widget.data.get('batch'),
+                              'courseTitle': widget.course.courseTitle,
+                              'courseBatch': widget.course.courseBatch,
+                              'coursePrice': widget.course.coursePrice,
+                              'enrollTime': DateTime.now(),
                               'status': 'pending',
                             }).then((value) {
                               Fluttertoast.showToast(
                                   msg:
-                                      'Payment info submitted.\nWe will send you a confirmation mail soon');
+                                      'Payment info submitted.\n We will send you a confirmation mail soon');
                               //
                               Navigator.pushAndRemoveUntil(
                                   context,

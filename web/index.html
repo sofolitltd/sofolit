@@ -41,32 +41,61 @@
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
 
-    <!--  loading  -->
-    <style>
-      .container {
-        width: 100vw;
-        height: 100vh;
-        display: flex; /* Default Axis is X*/
-        justify-content: center; /* Main Axis */
-        align-items: center; /* Cross Axis */
-      }
-      .indicator{
-        width: 40vw;
-      }
-
-
-
-
-    </style>
-
 </head>
-<body style="overflow: hidden">
 
-<!-- loading image-->
-<div id="loading_indicator" class="container">
-    <img class="indicator" src="./assets/l.gif"/>
+
+<body>
+<style>
+    #container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #EEEEEEFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #logo {
+/*        width: 124px;*/
+        height: 48px;
+        margin-bottom: 8px;
+    }
+
+
+    #progressBar {
+        width: 116px;
+        height: 8px;
+        background-color: #b39ddb;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #progressBarFill {
+        width: 100%;
+        height: 100%;
+        background: #7C4DFFFF;
+        animation: indeterminateAnimation 1.5s linear infinite;
+    }
+    @keyframes indeterminateAnimation {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+</style>
+<div id="container">
+    <img id="logo" src="icons/logo.png" alt="Logo">
+    <div id="progressBar">
+        <div id="progressBarFill"></div>
+    </div>
 </div>
-
 <!--main-->
 <script>
     window.addEventListener('load', function(ev) {
@@ -82,23 +111,6 @@
         }
       });
     });
-
-
-
-</script>
-<!-- loading script-->
-<script>
-    window.onLoad = function () {
-        setTimeout(function () {
-          var loadingIndicator = document.getElementById("loading_indicator");
-          if (loadingIndicator) {
-            loadingIndicator.remove();
-          }
-        }, 5000);
-};
-
-
-
 
 </script>
 

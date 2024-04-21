@@ -5,12 +5,21 @@ import '../../../utils/date_time_formatter.dart';
 import '../../../utils/open_app.dart';
 
 class Recordings extends StatelessWidget {
-  const Recordings({Key? key, required this.uid}) : super(key: key);
+  const Recordings({
+    super.key,
+    required this.uid,
+    required this.title,
+  });
+
   final String uid;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')
@@ -53,6 +62,7 @@ class ClassRecordingsCard extends StatelessWidget {
   const ClassRecordingsCard({super.key, required this.data});
 
   final QueryDocumentSnapshot data;
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -160,7 +170,7 @@ class ClassRecordingsCard extends StatelessWidget {
                       const SizedBox(width: 4),
 
                       //
-                      Text(DTFormatter.dateFormat(data.get('time'))),
+                      Text(DTFormatter.dateWithDay(data.get('time'))),
                     ],
                   ),
                 ),

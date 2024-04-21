@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sofolit/screens/splash.dart';
+import 'package:sofolit/wrapper.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'firebase_options.dart';
@@ -32,6 +34,7 @@ class MyApp extends StatelessWidget {
       title: 'Sofol IT',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        useMaterial3: false,
         scaffoldBackgroundColor: Colors.grey.shade200,
         primaryColor: Colors.deepPurpleAccent.shade200,
         primarySwatch: Colors.deepPurple,
@@ -44,6 +47,8 @@ class MyApp extends StatelessWidget {
           titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
                 color: Colors.black87,
                 fontWeight: FontWeight.w600,
+                fontFamily: GoogleFonts.hindSiliguri().fontFamily,
+                fontSize: 20,
               ),
           iconTheme: const IconThemeData(color: Colors.black),
           elevation: 0,
@@ -51,16 +56,18 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            minimumSize: const Size(100, 48),
+            minimumSize: const Size(100, 45),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            minimumSize: const Size(100, 48),
+            minimumSize: const Size(100, 45),
           ),
         ),
       ),
-      home: const Splash(),
+      home: kIsWeb ? const WrapperScreen() : const Splash(),
     );
   }
 }

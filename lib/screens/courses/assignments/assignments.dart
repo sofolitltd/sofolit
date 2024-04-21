@@ -1,15 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/admin/admin_button.dart';
 
-import '/screens/dashboard/assignments/add_assignment.dart';
-import '/screens/dashboard/assignments/assignment_details.dart';
+import '/admin/admin_button.dart';
+import '/screens/courses/assignments/add_assignment.dart';
+import '/screens/courses/assignments/assignment_details.dart';
 import '/utils/date_time_formatter.dart';
 
 class Assignments extends StatelessWidget {
-  const Assignments({Key? key, required this.uid}) : super(key: key);
+  const Assignments({
+    super.key,
+    required this.uid,
+    required this.title,
+  });
+
   final String uid;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +25,9 @@ class Assignments extends StatelessWidget {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => AddAssignment(uid: uid)));
         },
+      ),
+      appBar: AppBar(
+        title: Text(title),
       ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance

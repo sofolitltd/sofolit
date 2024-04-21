@@ -4,8 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Leaderboard extends StatefulWidget {
-  const Leaderboard({Key? key, required this.uid}) : super(key: key);
+  const Leaderboard({
+    super.key,
+    required this.uid,
+    required this.title,
+  });
+
   final String uid;
+  final String title;
 
   @override
   State<Leaderboard> createState() => _LeaderboardState();
@@ -15,6 +21,9 @@ class _LeaderboardState extends State<Leaderboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('courses')

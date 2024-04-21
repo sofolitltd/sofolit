@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 
-import '/screens/home/home_details.dart';
-import '/utils/date_time_formatter.dart';
+import '../../../model/course_model.dart';
+import '../home_details.dart';
 
 class HomeCourses extends StatelessWidget {
-  const HomeCourses({Key? key}) : super(key: key);
+  const HomeCourses({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,7 @@ class HomeCourses extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
-              height: 400,
+              height: 350,
               alignment: Alignment.center,
               child: const CircularProgressIndicator(),
             );
@@ -27,25 +26,25 @@ class HomeCourses extends StatelessWidget {
 
           if (!snapshot.hasData) {
             return Container(
-              height: 400,
+              height: 350,
               alignment: Alignment.center,
               child: const Text('Something went wrong'),
             );
           }
           var data = snapshot.data!.docs;
-          List subscribers = [];
-          for (var element in data) {
-            subscribers = element.get('subscribers');
-          }
-          if (subscribers.contains(FirebaseAuth.instance.currentUser!.uid)) {
-            return const Text('');
-          }
+          // List students = [];
+          // for (var element in data) {
+          //   students = element.get('enrolledStudents');
+          // }
+          // if (students.contains(FirebaseAuth.instance.currentUser!.uid)) {
+          //   return const SizedBox();
+          // }
 
           if (data.isEmpty) {
             return Container(
-              height: 400,
+              height: 350,
               alignment: Alignment.center,
-              child: const Text('No course found'),
+              child: const Text('No courses found'),
             );
           }
 
@@ -87,31 +86,33 @@ class HomeCourses extends StatelessWidget {
 
                 //
                 SizedBox(
-                  height: 350,
+                  height: 320,
                   width: MediaQuery.of(context).size.width,
                   // color: Colors.grey,
                   child: ListView.separated(
                     separatorBuilder: (context, index) {
-                      List subscribers = data[index].get('subscribers');
-
-                      if (subscribers
+                      List students = data[index].get('enrolledStudents');
+                      if (students
                           .contains(FirebaseAuth.instance.currentUser!.uid)) {
-                        return const Text('');
+                        return const SizedBox();
                       }
-                      return const SizedBox(width: 16);
+                      return const SizedBox(width: 20);
                     },
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       //
-                      List subscribers = data[index].get('subscribers');
-                      if (subscribers
+                      List students = data[index].get('enrolledStudents');
+                      if (students
                           .contains(FirebaseAuth.instance.currentUser!.uid)) {
-                        return const Text('');
+                        return const SizedBox();
                       }
-                      return CourseCard(data: data[index]);
+
+                      CourseModel course = CourseModel.fromJson(data[index]);
+                      return CourseCard(course: course);
                     },
                   ),
                 ),
@@ -126,35 +127,38 @@ class HomeCourses extends StatelessWidget {
 
 //card
 class CourseCard extends StatelessWidget {
-  const CourseCard({Key? key, required this.data}) : super(key: key);
+  const CourseCard({super.key, required this.course});
 
-  final QueryDocumentSnapshot data;
+  final CourseModel course;
 
   @override
   Widget build(BuildContext context) {
+    int remainingDays =
+        course.enrollFinish.difference(course.enrollStart).inDays;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeDetails(data: data),
+            builder: (context) => HomeDetails(course: course),
           ),
         );
       },
       child: Card(
-        elevation: 0,
+        elevation: 4,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: Theme.of(context).dividerColor, width: .5),
           borderRadius: BorderRadius.circular(8),
         ),
         child: SizedBox(
-          width: 300,
+          width: 280,
           child: Column(
             children: [
               //
               Stack(
-                alignment: Alignment.topRight,
+                alignment: Alignment.topLeft,
                 children: [
                   //image
                   Container(
@@ -163,7 +167,7 @@ class CourseCard extends StatelessWidget {
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: NetworkImage(
-                          data.get('image'),
+                          course.courseImage,
                         ),
                       ),
                       color: Colors.blue.shade100,
@@ -176,7 +180,7 @@ class CourseCard extends StatelessWidget {
 
                   //
                   Container(
-                    margin: const EdgeInsets.all(4),
+                    margin: const EdgeInsets.all(8),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                       color: Colors.red,
@@ -188,7 +192,7 @@ class CourseCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${data.get('discount')}% ',
+                          '${course.discountRate}% ',
                           style:
                               Theme.of(context).textTheme.titleMedium!.copyWith(
                                     color: Colors.white,
@@ -211,7 +215,7 @@ class CourseCard extends StatelessWidget {
               //sub and tile
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 14),
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -227,68 +231,65 @@ class CourseCard extends StatelessWidget {
                               //batch
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 4,
-                                  horizontal: 8,
+                                  vertical: 1,
+                                  horizontal: 10,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.grey.shade300,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
-                                  data.get('batch'),
+                                  course.courseBatch,
                                   style: Theme.of(context)
                                       .textTheme
-                                      .bodySmall!
+                                      .bodyMedium!
                                       .copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
                               ),
 
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 8),
 
                               //remaining
-                              CountdownTimer(
-                                endTime: DTFormatter.remainingDay(
-                                        data.get('lastDate'))
-                                    .millisecondsSinceEpoch,
-                                widgetBuilder: (context, time) {
-                                  return Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.watch_later_outlined,
-                                        size: 20,
-                                      ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.watch_later_outlined,
+                                    size: 18,
+                                  ),
 
-                                      const SizedBox(width: 4),
-                                      //
-                                      Text(
-                                        time == null
-                                            ? 'On going'
-                                            : '${time.days} days remaining',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall!
-                                            .copyWith(),
-                                      ),
-                                    ],
-                                  );
-                                },
+                                  const SizedBox(width: 4),
+                                  //
+                                  Text(
+                                    remainingDays == 0
+                                        ? 'On Going'
+                                        : '$remainingDays days remaining',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                          color: remainingDays == 0
+                                              ? Colors.red
+                                              : null,
+                                        ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
 
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 10),
 
                           //title
                           Text(
-                            data.get('title'),
+                            course.courseTitle,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context)
                                 .textTheme
-                                .titleMedium!
+                                .titleLarge!
                                 .copyWith(
                                   fontWeight: FontWeight.bold,
                                   height: 1.3,
@@ -307,7 +308,7 @@ class CourseCard extends StatelessWidget {
                             children: [
                               //discount
                               Text(
-                                '৳ ${data.get('price')}',
+                                '৳ ${course.coursePrice}',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)
@@ -325,7 +326,7 @@ class CourseCard extends StatelessWidget {
 
                               //price
                               Text(
-                                '৳ ${data.get('price') - (data.get('price') * (data.get('discount') / 100)).round()}',
+                                '৳ ${course.coursePrice - (course.coursePrice * (course.discountRate / 100)).round()}',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)
@@ -348,47 +349,18 @@ class CourseCard extends StatelessWidget {
                                 size: 20,
                               ),
 
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 8),
                               //
                               Text(
-                                '${data.get('seat')} seats left',
+                                '${course.courseSeats - course.enrolledStudents.length} seats left',
                                 style: Theme.of(context)
                                     .textTheme
-                                    .titleSmall!
+                                    .titleMedium!
                                     .copyWith(),
                               ),
                             ],
                           ),
                         ],
-                      ),
-
-                      //btn
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeDetails(data: data),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Details'.toUpperCase(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(Icons.arrow_right_alt_outlined),
-                          ],
-                        ),
                       ),
                     ],
                   ),

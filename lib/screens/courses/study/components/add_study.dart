@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AddStudyPlan extends StatefulWidget {
-  const AddStudyPlan({Key? key, required this.uid}) : super(key: key);
+  const AddStudyPlan({super.key, required this.uid});
 
   final String uid;
 
@@ -60,6 +60,7 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Study Plan'),
@@ -81,17 +82,24 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
                   Expanded(
                     flex: 1,
                     child: TextFormField(
-                      controller: _classController,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(12),
-                        border: OutlineInputBorder(),
-                        hintText: 'Class',
-                        label: Text('Class'),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value!.isEmpty ? 'Enter message' : null,
-                    ),
+                        controller: _classController,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.all(12),
+                          border: OutlineInputBorder(),
+                          hintText: 'Class',
+                          label: Text('Class'),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Enter message';
+                          }
+                          final n = num.tryParse(value);
+                          if (n == null) {
+                            return '"$value" is not a valid number';
+                          }
+                          return null;
+                        }),
                   ),
 
                   const SizedBox(width: 16),
@@ -242,9 +250,13 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
                       setState(() {
                         _isProgress = true;
                       });
+
+                      //
                       var ref = FirebaseFirestore.instance
                           .collection('courses')
-                          .doc(widget.uid);
+                          .doc(widget.uid)
+                          .collection("modules")
+                          .doc("Sy1SqhfIBLAkhVYxVzQA");
 
                       // record
                       if (_recordingController.text.trim().isNotEmpty) {
@@ -264,7 +276,7 @@ class _AddStudyPlanState extends State<AddStudyPlan> {
                         'description': _descriptionController.text.trim(),
                         'meeting': _meetingController.text.trim().isNotEmpty
                             ? _meetingController.text.trim()
-                            : 'https://us04web.zoom.us/j/5583151538?pwd=Tk1zMmc2WWpuYW9mZXNCLzVFYXFxdz09',
+                            : 'https://join.skype.com/pQBCn60chLKI',
                         'resource': _resourceController.text.trim().isEmpty
                             ? ''
                             : _resourceController.text.trim(),

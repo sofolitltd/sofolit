@@ -7,17 +7,17 @@ import '/screens/auth/sign_up.dart';
 import '/screens/landing_page.dart';
 
 class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+  const Login({super.key});
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: size.width < 800
-          ? Column(
+          ? const Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Expanded(
                   flex: 2,
                   child: Div1(),
@@ -52,7 +52,7 @@ class Login extends StatelessWidget {
 
 //div1
 class Div1 extends StatelessWidget {
-  const Div1({Key? key}) : super(key: key);
+  const Div1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +66,7 @@ class Div1 extends StatelessWidget {
             Text('Welcome to', style: Theme.of(context).textTheme.titleLarge),
 
             //
+
             Image.asset(
               'assets/logo/logo_black.png',
               width: 150,
@@ -79,7 +80,7 @@ class Div1 extends StatelessWidget {
 
 //div2
 class Div2 extends StatefulWidget {
-  const Div2({Key? key}) : super(key: key);
+  const Div2({super.key});
 
   @override
   State<Div2> createState() => _Div2State();

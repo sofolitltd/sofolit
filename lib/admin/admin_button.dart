@@ -26,9 +26,10 @@ class AdminButton extends StatelessWidget {
           return Container();
         }
 
-        return FloatingActionButton(
+        return FloatingActionButton.extended(
           onPressed: onPressed,
-          child: const Icon(Icons.add),
+          icon: const Icon(Icons.add),
+          label: const Text('Add New '),
         );
       },
     );

@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/admin/admin_button.dart';
-import 'package:sofolit/utils/open_app.dart';
 
-import '../../utils/date_time_formatter.dart';
+import '/admin/admin_button.dart';
+import '/utils/date_time_formatter.dart';
+import '/utils/open_app.dart';
 
 class Resources extends StatelessWidget {
-  const Resources({Key? key, required this.uid}) : super(key: key);
+  const Resources({
+    super.key,
+    required this.uid,
+    required this.title,
+  });
+
   final String uid;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +31,9 @@ class Resources extends StatelessWidget {
           //     'time': DateTime.now(),
           //   });
         },
+      ),
+      appBar: AppBar(
+        title: Text(title),
       ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance

@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sofolit/screens/admin/admin_assignment.dart';
 
-import '../payment.dart';
+import 'admin_assignment.dart';
+import 'payment.dart';
 
 class AdminSection extends StatelessWidget {
   const AdminSection({super.key});

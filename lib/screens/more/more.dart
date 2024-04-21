@@ -9,7 +9,7 @@ import '../splash.dart';
 import 'change_password.dart';
 
 class More extends StatelessWidget {
-  const More({Key? key}) : super(key: key);
+  const More({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class More extends StatelessWidget {
 
 // card
 class ProfileCard extends StatelessWidget {
-  const ProfileCard({Key? key, required this.data}) : super(key: key);
+  const ProfileCard({super.key, required this.data});
   final DocumentSnapshot data;
 
   @override
@@ -85,14 +85,14 @@ class ProfileCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8)),
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //
                       SizedBox(
-                        height: 100,
-                        width: 100,
+                        height: 88,
+                        width: 88,
                         child: data.get('image') == ''
                             ? Container(
                                 decoration: BoxDecoration(
@@ -129,26 +129,28 @@ class ProfileCard extends StatelessWidget {
                                   allWords: true),
                               style: Theme.of(context)
                                   .textTheme
-                                  .titleMedium!
+                                  .titleLarge!
                                   .copyWith(fontWeight: FontWeight.bold),
                             ),
 
+                            const SizedBox(height: 10),
+
                             //todo: edit profile
-                            // SizedBox(
-                            //   width: double.infinity,
-                            //   child: ElevatedButton(
-                            //       style: ElevatedButton.styleFrom(
-                            //         minimumSize: const Size(150, 45),
-                            //       ),
-                            //       onPressed: () {
-                            //         // Navigator.push(
-                            //         //     context,
-                            //         //     MaterialPageRoute(
-                            //         //         builder: (context) =>
-                            //         //             EditProfile(data: data)));
-                            //       },
-                            //       child: const Text('Edit profile')),
-                            // ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: const Size(150, 40),
+                                  ),
+                                  onPressed: () {
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) =>
+                                    //             EditProfile(data: data)));
+                                  },
+                                  child: const Text('Edit profile')),
+                            ),
                           ],
                         ),
                       ),
