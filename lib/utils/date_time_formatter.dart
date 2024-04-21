@@ -18,9 +18,15 @@ class DTFormatter {
   }
 
   // date
-  static date(timestamp) {
+  static dateShort(timestamp) {
     String t = '';
-    t = DateFormat('dd MMMM, yy').format(timestamp);
+    t = DateFormat('dd MMMM').format(timestamp);
+    return t.toString();
+  }
+
+  static dateFull(timestamp) {
+    String t = '';
+    t = DateFormat('dd MMMM, yyyy').format(timestamp);
     return t.toString();
   }
 

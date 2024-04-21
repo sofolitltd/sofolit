@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/admin/admin_button.dart';
 
 import '../../../utils/date_time_formatter.dart';
 import '/screens/courses/modules/video_player.dart';
@@ -7,9 +8,11 @@ import '/screens/courses/modules/video_player.dart';
 class ModulesDetails extends StatelessWidget {
   const ModulesDetails({
     super.key,
+    required this.courseID,
     required this.data,
   });
 
+  final String courseID;
   final QueryDocumentSnapshot data;
 
   @override
@@ -35,27 +38,6 @@ class ModulesDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   //1
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 2,
-                      horizontal: 10,
-                    ),
-                    child: Text(
-                      DTFormatter.date(startTime) +
-                          " - " +
-                          DTFormatter.date(finishTime),
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
 
                   //2
                   Text(
@@ -66,7 +48,16 @@ class ModulesDetails extends StatelessWidget {
                         ),
                   ),
 
-                  const SizedBox(height: 10),
+                  Text(
+                    DTFormatter.dateFull(startTime) +
+                        "  -  " +
+                        DTFormatter.dateFull(finishTime),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
 
                   //3
                   Row(
@@ -125,7 +116,7 @@ class ModulesDetails extends StatelessWidget {
                     ],
                   ),
 
-                  const Divider(),
+                  const Divider(height: 32),
                 ],
               ),
             ),
@@ -162,268 +153,217 @@ class ModulesDetails extends StatelessWidget {
               child: TabBarView(
                 children: [
                   // 1
-                  ListView.separated(
-                    // physics: const BouncingScrollPhysics(),
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 16),
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    itemCount: 2,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // 1
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                //module
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 1, horizontal: 12),
-                                  child: Text(
-                                    'Live',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                  ),
-                                ),
-
-                                const SizedBox(width: 16),
-
-                                // date
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade300,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 1,
-                                    horizontal: 10,
-                                  ),
-                                  child: Text(
-                                    '18 April - 24 April',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const Divider(),
-
-                            //2
-                            Text(
-                              'The ultimate freelancing guide',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    // color: Colors.white,
-                                  ),
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            //3
-                            MaterialButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const VideoPlayer()),
-                                );
-                              },
-                              color: Colors.grey.shade200,
-                              elevation: 0,
-                              padding: const EdgeInsets.all(8),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  //icon
-                                  const Icon(
-                                    Icons.play_circle_outlined,
-                                    // size: 14,
-                                  ),
-
-                                  const SizedBox(width: 8),
-
-                                  // label
-                                  Text(
-                                    'Class Recoding',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(
-                                            // fontWeight: FontWeight.bold,
-                                            // color: Colors.white,
-                                            ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                  LiveClass(courseID: courseID, data: data),
 
                   // 2
-                  ListView.separated(
-                    // physics: const BouncingScrollPhysics(),
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 16),
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    itemCount: 4,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => DashboardDetails(
-                          //             uid: 'uid', title: 'title')));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // 1
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  //module
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 1, horizontal: 12),
-                                    child: Text(
-                                      'Live',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                    ),
-                                  ),
-
-                                  // date
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.blueGrey.shade400,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 1,
-                                      horizontal: 8,
-                                    ),
-                                    child: Text(
-                                      '18 April - 24 April',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              const Divider(),
-
-                              //2
-                              Text(
-                                'The ultimate freelancing guide',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      // color: Colors.white,
-                                    ),
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              //3
-                              MaterialButton(
-                                onPressed: () {},
-                                color: Colors.grey.shade200,
-                                elevation: 0,
-                                padding: const EdgeInsets.all(8),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    //icon
-                                    const Icon(
-                                      Icons.play_circle_outlined,
-                                      // size: 14,
-                                    ),
-
-                                    const SizedBox(width: 8),
-
-                                    // label
-                                    Text(
-                                      'Class Recoding',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(
-                                              // fontWeight: FontWeight.bold,
-                                              // color: Colors.white,
-                                              ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  const Center(child: Text('No Assignment Found!')),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// live
+class LiveClass extends StatefulWidget {
+  const LiveClass({
+    super.key,
+    required this.courseID,
+    required this.data,
+  });
+  final String courseID;
+  final QueryDocumentSnapshot data;
+
+  @override
+  State<LiveClass> createState() => _LiveClassState();
+}
+
+class _LiveClassState extends State<LiveClass> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      //
+      floatingActionButton: AdminButton(onPressed: () {
+        // FirebaseFirestore.instance
+        //     .collection('courses')
+        //     .doc(widget.courseID)
+        //     .collection('lives')
+        //     .doc()
+        //     .set({
+        //   'category': 'live',
+        //   'title': 'Module 2 Live Class',
+        //   'date': DateTime.now(),
+        //   'videoURL': 'https://youtu.be/l-R2G83Ecw4',
+        // });
+      }),
+
+      //
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('courses')
+            .doc(widget.courseID)
+            .collection('lives')
+            // .where('category', isEqualTo: 'live')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          var data = snapshot.data!.docs;
+          if (data.isEmpty) {
+            return const Center(
+              child: Text('No data found'),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text('Something went wrong'),
+            );
+          }
+
+          return Scrollbar(
+            child: ListView.separated(
+              // physics: const BouncingScrollPhysics(),
+              separatorBuilder: (context, index) => const SizedBox(height: 20),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 1
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //
+                          const Icon(
+                            Icons.check_circle_outline,
+                            size: 32,
+                            color: Colors.green,
+                          ),
+
+                          const SizedBox(width: 4),
+
+                          //module
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 1, horizontal: 12),
+                            child: Text(
+                              'Live',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 16),
+
+                          // date
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 1,
+                              horizontal: 10,
+                            ),
+                            child: Text(
+                              DTFormatter.dateFull(
+                                  data[index].get('date').toDate()),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const Divider(),
+
+                      //2
+                      Text(
+                        data[index].get('title'),
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                              // color: Colors.white,
+                            ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      //3
+                      MaterialButton(
+                        onPressed: () {
+                          var videoURL = data[index].get('videoURL');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VideoPlayer(
+                                      data: data[index],
+                                    )),
+                          );
+                        },
+                        color: Colors.grey.shade200,
+                        elevation: 0,
+                        padding: const EdgeInsets.all(8),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            //icon
+                            const Icon(
+                              Icons.play_circle_outlined,
+                              // size: 14,
+                            ),
+
+                            const SizedBox(width: 8),
+
+                            // label
+                            Text(
+                              'Class Recoding',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      // fontWeight: FontWeight.bold,
+                                      // color: Colors.white,
+                                      ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }

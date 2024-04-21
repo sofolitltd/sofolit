@@ -9,11 +9,11 @@ import 'modules_details.dart';
 class Modules extends StatelessWidget {
   const Modules({
     super.key,
-    required this.uid,
+    required this.courseID,
     required this.title,
   });
 
-  final String uid;
+  final String courseID;
   final String title;
 
   @override
@@ -21,8 +21,10 @@ class Modules extends StatelessWidget {
     return Scaffold(
       floatingActionButton: AdminButton(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => AddModule(uid: uid)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddModule(uid: courseID)));
         },
       ),
       appBar: AppBar(
@@ -33,7 +35,7 @@ class Modules extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('courses')
-            .doc(uid)
+            .doc(courseID)
             .collection('modules')
             .orderBy('moduleNo')
             .snapshots(),
@@ -57,8 +59,8 @@ class Modules extends StatelessWidget {
 
           return Scrollbar(
             child: ListView.separated(
-              separatorBuilder: (context, index) => const SizedBox(height: 24),
-              padding: const EdgeInsets.all(16),
+              separatorBuilder: (context, index) => const SizedBox(height: 20),
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               itemCount: data.length,
               itemBuilder: (context, index) {
                 DateTime startTime = data[index].get('startTime').toDate();
@@ -91,6 +93,7 @@ class Modules extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ModulesDetails(
+                          courseID: courseID,
                           data: data[index],
                         ),
                       ),
@@ -102,7 +105,7 @@ class Modules extends StatelessWidget {
                         // : statusColor.withOpacity(.05),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.grey.shade400,
+                          color: Colors.white,
                         )),
                     padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
                     child: Column(
@@ -140,14 +143,14 @@ class Modules extends StatelessWidget {
                                 horizontal: 10,
                               ),
                               child: Text(
-                                DTFormatter.date(startTime) +
+                                DTFormatter.dateShort(startTime) +
                                     " - " +
-                                    DTFormatter.date(finishTime),
+                                    DTFormatter.dateShort(finishTime),
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
                                     .copyWith(
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w500,
                                       color: Colors.black,
                                     ),
                               ),

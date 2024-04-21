@@ -1,24 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import '../../../utils/date_time_formatter.dart';
 import '../../../utils/duration_formater.dart';
 
 class VideoPlayer extends StatefulWidget {
-  const VideoPlayer({super.key});
+  const VideoPlayer({super.key, required this.data});
+  final QueryDocumentSnapshot data;
 
   @override
   State<VideoPlayer> createState() => _VideoPlayerState();
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
-  final videoURL = 'https://youtu.be/l-R2G83Ecw4';
   late YoutubePlayerController _controller;
 
   @override
   void initState() {
     //
-    final videoID = YoutubePlayer.convertUrlToId(videoURL);
+    final videoID = YoutubePlayer.convertUrlToId(widget.data.get('videoURL'));
 
     _controller = YoutubePlayerController(
       initialVideoId: videoID!,
@@ -138,7 +140,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
                             horizontal: 10,
                           ),
                           child: Text(
-                            '18 April - 24 April',
+                            DTFormatter.dateFull(
+                                widget.data.get('date').toDate()),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -150,16 +153,19 @@ class _VideoPlayerState extends State<VideoPlayer> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     //2
                     Text(
-                      'The ultimate freelancing guide',
+                      widget.data.get('title'),
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                             // color: Colors.white,
                           ),
                     ),
-                    const Divider(),
+
+                    const Divider(height: 32),
+
+                    const SizedBox(height: 10),
 
                     //
                   ],

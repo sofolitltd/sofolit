@@ -203,12 +203,12 @@ class CoursesDetails extends StatelessWidget {
                           switch (index) {
                             case 0:
                               return Modules(
-                                uid: uid,
+                                courseID: uid,
                                 title: categoryList[index]["title"],
                               );
                             case 1:
                               return Modules(
-                                uid: uid,
+                                courseID: uid,
                                 title: categoryList[index]["title"],
                               );
                             case 2:
