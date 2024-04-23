@@ -3,9 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AdminButton extends StatelessWidget {
-  const AdminButton({super.key, required this.onPressed});
+  const AdminButton({super.key, required this.onPressed, this.child});
 
   final VoidCallback onPressed;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +27,12 @@ class AdminButton extends StatelessWidget {
           return Container();
         }
 
-        return FloatingActionButton.extended(
-          onPressed: onPressed,
-          icon: const Icon(Icons.add),
-          label: const Text('Add New '),
-        );
+        return child ??
+            FloatingActionButton.extended(
+              onPressed: onPressed,
+              icon: const Icon(Icons.add),
+              label: const Text('Add New '),
+            );
       },
     );
   }

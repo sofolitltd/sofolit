@@ -118,7 +118,7 @@ class Resources extends StatelessWidget {
                               const SizedBox(width: 4),
 
                               //
-                              Text(DTFormatter.dateTimeFormat(
+                              Text(DTFormatter.dateWithTime(
                                   data[index].get('time'))),
                             ],
                           ),

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../../../utils/date_time_formatter.dart';
-import '../../../utils/duration_formater.dart';
+import '/utils/date_time_formatter.dart';
+import '/utils/duration_formatter.dart';
 
 class VideoPlayer extends StatefulWidget {
   const VideoPlayer({super.key, required this.data});
@@ -25,7 +25,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
     _controller = YoutubePlayerController(
       initialVideoId: videoID!,
       flags: const YoutubePlayerFlags(
-        autoPlay: true,
+        autoPlay: false,
       ),
     );
 
@@ -94,16 +94,17 @@ class _VideoPlayerState extends State<VideoPlayer> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             player,
-            const SizedBox(height: 16),
+            // const SizedBox(height: 16),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.all(16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // 1
                     Row(
@@ -128,7 +129,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                                 ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         // date
                         Container(
                           decoration: BoxDecoration(
@@ -136,12 +137,12 @@ class _VideoPlayerState extends State<VideoPlayer> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 1,
+                            vertical: 2,
                             horizontal: 10,
                           ),
                           child: Text(
-                            DTFormatter.dateFull(
-                                widget.data.get('date').toDate()),
+                            DTFormatter.dateWithDay(
+                                widget.data.get('classDate').toDate()),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -166,6 +167,14 @@ class _VideoPlayerState extends State<VideoPlayer> {
                     const Divider(height: 32),
 
                     const SizedBox(height: 10),
+
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Back to Live Class'),
+                    ),
 
                     //
                   ],

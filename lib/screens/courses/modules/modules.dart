@@ -6,6 +6,13 @@ import '/utils/date_time_formatter.dart';
 import 'add_modules.dart';
 import 'modules_details.dart';
 
+enum StatusEnum {
+  completed,
+  ongoing,
+  upcoming,
+  running,
+}
+
 class Modules extends StatelessWidget {
   const Modules({
     super.key,
@@ -73,15 +80,15 @@ class Modules extends StatelessWidget {
                 bool isOngoing = false;
 
                 if (now.isBefore(startTime)) {
-                  status = 'Upcoming';
+                  status = StatusEnum.upcoming.name;
                   statusIcon = Icons.schedule;
                   statusColor = Colors.red;
                 } else if (now.isAfter(finishTime)) {
-                  status = 'Completed';
+                  status = StatusEnum.completed.name;
                   statusIcon = Icons.check_circle_outline;
                   statusColor = Colors.green;
                 } else {
-                  status = 'Ongoing';
+                  status = StatusEnum.ongoing.name;
                   statusIcon = Icons.play_circle_outline;
                   statusColor = Colors.yellow;
                   isOngoing = true;
@@ -133,6 +140,8 @@ class Modules extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 16),
+
+                            // date range
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade200,
@@ -158,6 +167,8 @@ class Modules extends StatelessWidget {
                           ],
                         ),
                         const Divider(),
+
+                        //title
                         Text(
                           data[index].get('moduleTitle'),
                           style: Theme.of(context)
@@ -168,58 +179,73 @@ class Modules extends StatelessWidget {
                                 color: isOngoing ? Colors.white : Colors.black,
                               ),
                         ),
-                        const SizedBox(height: 6),
+                        // const SizedBox(height: 6),
+
+                        //
                         Row(
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.video_call_outlined,
-                                  size: 18,
-                                  color:
-                                      isOngoing ? Colors.white : Colors.black,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '2 Live Class',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                        color: isOngoing
-                                            ? Colors.white
-                                            : Colors.black,
+                            //
+                            SizedBox(
+                              width: 100,
+                              height: 24,
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('courses')
+                                    .doc(courseID)
+                                    .collection('lives')
+                                    .where('moduleNo',
+                                        isEqualTo: data[index].get('moduleNo'))
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const SizedBox();
+                                  }
+                                  var data = snapshot.data!.docs;
+                                  if (data.isEmpty) {
+                                    return const SizedBox();
+                                  }
+                                  if (!snapshot.hasData) {
+                                    return const SizedBox();
+                                  }
+
+                                  return Row(
+                                    children: [
+                                      //icon
+                                      const Icon(
+                                        Icons.video_call_outlined,
+                                        size: 20,
+                                        color: Colors.teal,
                                       ),
-                                ),
-                              ],
+
+                                      const SizedBox(width: 6),
+
+                                      // label
+                                      Text(
+                                        '${data.length}  Live Class',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blueGrey,
+                                            ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
+
                             const SizedBox(width: 24),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.assignment,
-                                  size: 14,
-                                  color:
-                                      isOngoing ? Colors.white : Colors.black,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '2 Assignment',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                        color: isOngoing
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                ),
-                              ],
-                            ),
+
+                            // assignment
                           ],
                         ),
                         const SizedBox(height: 2),
                         const Divider(),
+
+                        //status
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

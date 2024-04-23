@@ -100,7 +100,7 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
                       .copyWith(fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  DTFormatter.dateTimeFormat(widget.data.get('time')),
+                  DTFormatter.dateWithTime(widget.data.get('time')),
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!

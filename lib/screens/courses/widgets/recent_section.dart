@@ -469,7 +469,7 @@ class RecentSection extends StatelessWidget {
 
                                   //
                                   Text(
-                                    DTFormatter.dateTimeFormat(
+                                    DTFormatter.dateWithTime(
                                         data[index].get('time')),
                                     style: Theme.of(context)
                                         .textTheme

@@ -3,10 +3,9 @@ import 'package:intl/intl.dart';
 
 class DTFormatter {
   //date and time
-  static dateTimeFormat(timestamp) {
+  static dateWithTime(DateTime timestamp) {
     String t = '';
-    var tm = timestamp as Timestamp;
-    t = DateFormat('EEE, dd MMMM, yyyy  - hh:mm a').format(tm.toDate());
+    t = DateFormat('dd MMMM, yyyy - hh:mm a').format(timestamp);
     return t.toString();
   }
 
@@ -26,7 +25,7 @@ class DTFormatter {
 
   static dateFull(timestamp) {
     String t = '';
-    t = DateFormat('dd MMMM, yyyy').format(timestamp);
+    t = DateFormat('dd MMM, yyyy').format(timestamp);
     return t.toString();
   }
 

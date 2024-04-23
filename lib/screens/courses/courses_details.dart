@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/screens/courses/joining/joining.dart';
 
 import '/screens/courses/assignments/assignments.dart';
 import '/screens/courses/leaderboard/leaderboard.dart';
@@ -207,9 +208,9 @@ class CoursesDetails extends StatelessWidget {
                                 title: categoryList[index]["title"],
                               );
                             case 1:
-                              return Modules(
+                              return Joining(
                                 courseID: uid,
-                                title: categoryList[index]["title"],
+                                // title: categoryList[index]["title"],
                               );
                             case 2:
                               return Assignments(

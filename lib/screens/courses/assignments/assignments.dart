@@ -114,7 +114,7 @@ class AssignmentCard extends StatelessWidget {
                     'Deadline: ',
                     style: TextStyle(color: Colors.red),
                   ),
-                  Text(DTFormatter.dateTimeFormat(data.get('time'))),
+                  Text(DTFormatter.dateWithTime(data.get('time'))),
                 ],
               ),
             ),

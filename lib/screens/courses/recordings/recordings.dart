@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/date_time_formatter.dart';
-import '../../../utils/open_app.dart';
+import '../modules/video_player.dart';
 
 class Recordings extends StatelessWidget {
   const Recordings({
@@ -18,42 +18,79 @@ class Recordings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: const Text('Class Recording'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('courses')
-              .doc(uid)
-              .collection('recoding')
-              .orderBy('class', descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            var data = snapshot.data!.docs;
-            if (data.isEmpty) {
-              return const Center(
-                child: Text('No data found'),
-              );
-            }
-            if (!snapshot.hasData) {
-              return const Center(
-                child: Text('Something went wrong'),
-              );
-            }
-            return ListView.separated(
-              shrinkWrap: true,
-              itemCount: data.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-              itemBuilder: (context, index) {
-                return ClassRecordingsCard(data: data[index]);
-              },
+        stream: FirebaseFirestore.instance
+            .collection('courses')
+            .doc(uid)
+            .collection('lives')
+            .orderBy('moduleNo', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          }),
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text('No data found'),
+            );
+          }
+
+          var data = snapshot.data!.docs;
+
+          var classRecordings =
+              data.where((doc) => doc.get('videoURL') != '').toList();
+
+          if (classRecordings.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons
+                        .hourglass_empty, // You can change the icon as per your preference
+                    size: 80,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Currently, there are no available\nClass Recordings!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Check back later for updates.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.separated(
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemCount: classRecordings.length,
+            padding: const EdgeInsets.all(16),
+            itemBuilder: (context, index) {
+              return ClassRecordingsCard(data: classRecordings[index]);
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -65,118 +102,101 @@ class ClassRecordingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: ListTile(
-        onTap: () {
-          OpenApp.withUrl(data.get('url'));
-        },
-        trailing: Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 2,
-              horizontal: 4,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.yellow.shade100,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.yellow),
-            ),
-            child: const Icon(
-              Icons.play_arrow_outlined,
-              color: Colors.black,
-            )),
-        title: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
+    return GestureDetector(
+      onTap: () {
+        // play page
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => VideoPlayer(data: data)));
+      },
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 14, 12, 12),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              //1
+              Row(
+                children: [
+                  //
+                  Container(
+                    width: 94,
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrange.shade100,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 3),
+                    child: Text(
+                      'Module  ${data.get('moduleNo')}',
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            height: 1,
+                          ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  //
+                  Container(
+                    width: 74,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 10, 3),
+                    child: Text(
+                      'Class  ${data.get('classNo')}',
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            height: 1,
+                          ),
+                    ),
+                  ),
+
+                  const Spacer(),
+                  //
+                  const Icon(
+                    Icons.play_circle,
+                    color: Colors.black54,
+                    size: 24,
+                  ),
+                ],
+              ),
+
+              const Divider(height: 24),
+
+              // 2
               Text(
                 data.get('title'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                data.get('description'),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      height: 1,
-                      color: Colors.black54,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      height: 1.2,
+                      fontWeight: FontWeight.bold,
                     ),
+              ),
+
+              const SizedBox(height: 3),
+
+              // date
+              Row(
+                children: [
+                  const Icon(Icons.calendar_month_outlined, size: 14),
+
+                  const SizedBox(width: 8),
+
+                  //
+                  Text(
+                    DTFormatter.dateWithDay(data.get('classDate').toDate()),
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(),
+                  ),
+                ],
               ),
             ],
           ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //
-            Row(
-              children: [
-                // class
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 2,
-                    horizontal: 8,
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.play_arrow_rounded,
-                        size: 16,
-                      ),
-
-                      const SizedBox(width: 4),
-
-                      //
-                      Text('Class ${data.get('class')}'),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(width: 8),
-
-                // date
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 2,
-                    horizontal: 8,
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade50,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.calendar_month_outlined,
-                        size: 16,
-                      ),
-
-                      const SizedBox(width: 4),
-
-                      //
-                      Text(DTFormatter.dateWithDay(data.get('time'))),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );
