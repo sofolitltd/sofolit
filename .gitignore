@@ -32,6 +32,7 @@ migrate_working_dir/
 .pub/
 /build/
 /lib/utils/credentials.dart
+/data/sofolitbd-firebase-adminsdk-a9t0o-bd8b06f57d.json
 
 # Symbolication related
 app.*.symbols
