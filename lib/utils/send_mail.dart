@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
+import 'package:sofolit/utils/credentials.dart';
 
 sendEmail(BuildContext context //For showing snackbar
     ) async {
-  String username = 'sofolitltd@gmail.com'; //Your Email
-  String password = 'akbminggugsfdxyt';
+  String username = Credentials.email; //Your Email
+  String password = Credentials.password;
 
   //
   final smtpServer = gmail(username, password);
