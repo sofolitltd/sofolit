@@ -5,9 +5,13 @@ import 'package:sofolit/utils/open_app.dart';
 
 enum Status { submitted, approved }
 
-class AdminAssignment extends StatelessWidget {
-  const AdminAssignment({super.key});
+class CheckAssignment extends StatelessWidget {
+  const CheckAssignment({
+    super.key,
+    required this.courseID,
+  });
 
+  final String courseID;
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -17,7 +21,7 @@ class AdminAssignment extends StatelessWidget {
       length: Status.values.length,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Assignment'),
+          title: const Text('Check Assignments'),
           bottom: TabBar(
             padding: EdgeInsets.symmetric(
                 horizontal: !isSmallScreen ? size.width * .2 : 0),
@@ -27,36 +31,86 @@ class AdminAssignment extends StatelessWidget {
                 .toList(),
           ),
         ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: !isSmallScreen ? size.width * .2 : 0),
-          child: TabBarView(
-            children: Status.values
-                .map((e) => StatusTabs(title: StringUtils.capitalize(e.name)))
-                .toList(),
-          ),
-        ),
+
+        body: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('courses')
+                .doc(courseID)
+                .collection('assignments')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              var data = snapshot.data!.docs;
+              if (data.isEmpty) {
+                return const Center(
+                  child: Text('No data found'),
+                );
+              }
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: Text('Something went wrong'),
+                );
+              }
+
+              //
+              return ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: data.length,
+                separatorBuilder: (context, index) {
+                  return const SizedBox(height: 8);
+                },
+                itemBuilder: (context, index) {
+                  return CheckAssignmentsCard(
+                    data: data[index],
+                    title: 'Pending',
+                  );
+                },
+              );
+            }),
+        // body: Padding(
+        //   padding: EdgeInsets.symmetric(
+        //       horizontal: !isSmallScreen ? size.width * .2 : 0),
+        //   child: TabBarView(
+        //     // children: Status.values
+        //     //     .map((e) => StatusTabs(title: StringUtils.capitalize(e.name)))
+        //     //     .toList(),
+        //     children: [
+        //       StatusTabs(title: 'Pending'),
+        //       StatusTabs(title: 'Approved'),
+        //     ],
+        //   ),
+        // ),
       ),
     );
   }
 }
 
-const String courseId = 'Wd6aI7U1RBsRRI0dtNno';
-
 //
 class StatusTabs extends StatelessWidget {
-  const StatusTabs({super.key, required this.title});
+  const StatusTabs({
+    super.key,
+    required this.title,
+    required this.courseID,
+    required this.assignmentID,
+  });
 
   final String title;
+  final String courseID;
+  final String assignmentID;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('courses')
-            .doc(courseId)
+            .doc(courseID)
             .collection('assignments')
-            .where('status', isEqualTo: title)
+            // .doc(assignmentID)
+            // .orderBy('moduleNo', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -84,16 +138,16 @@ class StatusTabs extends StatelessWidget {
               return const SizedBox(height: 8);
             },
             itemBuilder: (context, index) {
-              return AdminAssignmentCard(data: data[index], title: title);
+              return CheckAssignmentsCard(data: data[index], title: title);
             },
           );
         });
   }
 }
 
-//
-class AdminAssignmentCard extends StatelessWidget {
-  const AdminAssignmentCard(
+// card
+class CheckAssignmentsCard extends StatelessWidget {
+  const CheckAssignmentsCard(
       {super.key, required this.data, required this.title});
 
   final QueryDocumentSnapshot data;
@@ -118,7 +172,7 @@ class AdminAssignmentCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Email: ${data.get('email')}'),
+              Text("Email: {data.get('email')}"),
               const SizedBox(height: 8),
 
               //
@@ -127,12 +181,12 @@ class AdminAssignmentCard extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(4)),
-                  color: data.get('status') == 'Submitted'
-                      ? Colors.blue.shade400
-                      : Colors.green.shade400,
+                  // color: data.get('status') == 'Submitted'
+                  //     ? Colors.blue.shade400
+                  //     : Colors.green.shade400,
                 ),
                 child: Text(
-                  '${data.get('status')}',
+                  "{data.get('status')}",
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
@@ -302,7 +356,7 @@ class _AdminAssignmentCardDetailsState
                                   //
                                   var ref = FirebaseFirestore.instance
                                       .collection('courses')
-                                      .doc(courseId);
+                                      .doc('courseID');
 
                                   //
                                   var newObtainMark = int.parse(

@@ -2,21 +2,26 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sofolit/screens/splash.dart';
-import 'package:sofolit/wrapper.dart';
 import 'package:url_strategy/url_strategy.dart';
 
+import '/screens/splash.dart';
+import '/wrapper.dart';
 import 'firebase_options.dart';
 
-// @pragma('vm:entry-point')
-// Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   print("Handling a background message: ${message.messageId}");
-// }
+//
+// final navigatorKey = GlobalKey<NavigatorState>();
 
+//
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // await FCMUtils().initialize();
+
+  // fcm
+  // if (!kIsWeb) {
+  // await FirebaseApi().initNotifications();
+  // todo
+  // await FirebaseMessaging.instance.subscribeToTopic("topic");
+  // }
 
   //remove #
   setPathUrlStrategy();
@@ -67,6 +72,11 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      // navigatorKey: navigatorKey,
+      // routes: {
+      //   '/notice': (context) => const NoticeScreen(),
+      //   '/landing': (context) => const WrapperScreen(),
+      // },
       home: kIsWeb ? const WrapperScreen() : const Splash(),
     );
   }

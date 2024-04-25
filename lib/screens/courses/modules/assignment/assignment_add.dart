@@ -3,9 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AddAssignment extends StatefulWidget {
-  const AddAssignment({Key? key, required this.uid}) : super(key: key);
+  const AddAssignment({
+    super.key,
+    required this.courseID,
+    required this.moduleNo,
+    required this.classNo,
+    required this.classTitle,
+    required this.classDate,
+  });
 
-  final String uid;
+  final String courseID;
+  final int moduleNo;
+  final int classNo;
+  final String classTitle;
+  final DateTime classDate;
 
   @override
   State<AddAssignment> createState() => _AddAssignmentState();
@@ -13,6 +24,7 @@ class AddAssignment extends StatefulWidget {
 
 class _AddAssignmentState extends State<AddAssignment> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  final TextEditingController _classNoController = TextEditingController();
   final TextEditingController _marksController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -22,7 +34,19 @@ class _AddAssignmentState extends State<AddAssignment> {
   @override
   void dispose() {
     _titleController.dispose();
+    _descriptionController.dispose();
+    _classNoController.dispose();
+    _marksController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    _classNoController.text = widget.classNo.toString();
+    _titleController.text = widget.classTitle.toString();
+    _descriptionController.text = 'Submit assignments before deadline';
+    _selectedDateTime = widget.classDate.add(const Duration(days: 3));
+    super.initState();
   }
 
   DateTime? _selectedDate;
@@ -31,6 +55,7 @@ class _AddAssignmentState extends State<AddAssignment> {
 
   //Method for showing the date picker
   _pickDateDialog() async {
+    //
     await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -46,7 +71,7 @@ class _AddAssignmentState extends State<AddAssignment> {
   _pickTimeDialog() async {
     await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: const TimeOfDay(hour: 22, minute: 00),
     ).then((pickedTime) {
       if (pickedTime == null) return;
       _selectedTime = pickedTime;
@@ -71,7 +96,51 @@ class _AddAssignmentState extends State<AddAssignment> {
           child: ListView(
             padding: const EdgeInsets.all(8),
             children: [
-              // t
+              // mark and date
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //class no
+                  Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: _classNoController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(12),
+                        border: OutlineInputBorder(),
+                        hintText: 'Class No',
+                        label: Text('Class No'),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) =>
+                          value!.isEmpty ? 'Enter message' : null,
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  //marks
+                  Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: _marksController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(12),
+                        border: OutlineInputBorder(),
+                        hintText: 'Marks',
+                        label: Text('Marks'),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) =>
+                          value!.isEmpty ? 'Enter message' : null,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // title
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(
@@ -86,7 +155,7 @@ class _AddAssignmentState extends State<AddAssignment> {
               ),
               const SizedBox(height: 16),
 
-              //des
+              //description
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 5,
@@ -105,55 +174,50 @@ class _AddAssignmentState extends State<AddAssignment> {
 
               const SizedBox(height: 16),
 
-              // mark and date
-              Row(
-                children: [
-                  //marks
-                  Expanded(
-                    flex: 1,
-                    child: TextFormField(
-                      controller: _marksController,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(12),
-                        border: OutlineInputBorder(),
-                        hintText: 'Marks',
-                        label: Text('Marks'),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value!.isEmpty ? 'Enter message' : null,
+              // time
+              ElevatedButton(
+                style:
+                    ElevatedButton.styleFrom(minimumSize: const Size(56, 50)),
+                onPressed: () async {
+                  await _pickDateDialog();
+                  if (_selectedDate == null) return;
+
+                  await _pickTimeDialog();
+                  if (_selectedTime == null) return;
+
+                  _selectedDateTime = DateTime(
+                    _selectedDate!.year,
+                    _selectedDate!.month,
+                    _selectedDate!.day,
+                    _selectedTime!.hour,
+                    _selectedTime!.minute,
+                  );
+                  print(_selectedDateTime);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //
+                    const Icon(
+                      Icons.calendar_month_outlined,
+                      size: 18,
                     ),
-                  ),
 
-                  const SizedBox(width: 16),
-
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        await _pickDateDialog();
-                        if (_selectedDate == null) return;
-
-                        await _pickTimeDialog();
-                        if (_selectedTime == null) return;
-
-                        _selectedDateTime = DateTime(
-                          _selectedDate!.year,
-                          _selectedDate!.month,
-                          _selectedDate!.day,
-                          _selectedTime!.hour,
-                          _selectedTime!.minute,
-                        );
-                        print(_selectedDateTime);
-                      },
-                      icon: const Icon(Icons.calendar_month_outlined),
-                      label: Text(_selectedDateTime == null
+                    const SizedBox(width: 8),
+                    //
+                    Text(
+                      _selectedDateTime == null
                           ? 'Deadline'.toUpperCase()
-                          : DateFormat('EEE, dd MMM, yy\nhh:mm a')
-                              .format(_selectedDateTime!)),
+                          : DateFormat('dd MMM, yy(EEE) - hh:mm a')
+                              .format(_selectedDateTime!)
+                              .toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 2,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 24),
@@ -163,7 +227,7 @@ class _AddAssignmentState extends State<AddAssignment> {
                 height: 48,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (_selectedDate == null) {
+                    if (_selectedDateTime == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('No Date & Time picked!'),
@@ -193,17 +257,26 @@ class _AddAssignmentState extends State<AddAssignment> {
                         _isProgress = true;
                       });
 
+                      String assignmentID =
+                          '${DateTime.now().millisecondsSinceEpoch}';
+                      //
                       var ref = FirebaseFirestore.instance
                           .collection('courses')
-                          .doc(widget.uid)
-                          .collection('assignment');
-                      ref.doc().set({
-                        'title': _titleController.text.trim(),
-                        'description': _descriptionController.text.trim(),
-                        'status': 'Pending',
-                        'marks': int.parse(_marksController.text.trim()),
-                        'time': _selectedDateTime,
-                        'feedback': '',
+                          .doc(widget.courseID)
+                          .collection('assignments');
+
+                      //
+                      ref.doc(assignmentID).set({
+                        'moduleNo': widget.moduleNo,
+                        'classNo': int.parse(_classNoController.text),
+                        'assignmentID': assignmentID,
+                        'assignmentTitle': _titleController.text.trim(),
+                        'assignmentDescription':
+                            _descriptionController.text.trim(),
+                        'assignmentMarks':
+                            int.parse(_marksController.text.trim()),
+                        'assignmentDate': _selectedDateTime,
+                        'submitterList': [],
                       }).then((value) {
                         setState(() {
                           _isProgress = false;
@@ -214,7 +287,7 @@ class _AddAssignmentState extends State<AddAssignment> {
                   },
                   child: _isProgress
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Add now'),
+                      : const Text('Add Now'),
                 ),
               ),
             ],

@@ -2,32 +2,33 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sofolit/screens/courses/modules/assignment/assignment_add.dart';
 
 import '../modules.dart';
-import '../video_player.dart';
+import '../video_player_web.dart';
 import '/admin/admin_button.dart';
-import '/screens/courses/modules/live/add_live.dart';
-import '/screens/courses/modules/live/add_materials.dart';
+import '/screens/courses/modules/Class/class_add.dart';
+import '/screens/courses/modules/Class/class_add_materials.dart';
 import '/utils/date_time_formatter.dart';
 import '/utils/open_app.dart';
 
-class LiveClass extends StatefulWidget {
-  const LiveClass({
+class Class extends StatefulWidget {
+  const Class({
     super.key,
     required this.courseID,
-    required this.liveData,
+    required this.classData,
     required this.moduleStatus,
   });
 
   final String courseID;
-  final QueryDocumentSnapshot liveData;
+  final QueryDocumentSnapshot classData;
   final String moduleStatus;
 
   @override
-  State<LiveClass> createState() => _LiveClassState();
+  State<Class> createState() => _ClassState();
 }
 
-class _LiveClassState extends State<LiveClass> {
+class _ClassState extends State<Class> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +39,7 @@ class _LiveClassState extends State<LiveClass> {
             MaterialPageRoute(
               builder: (context) => AddLive(
                 courseID: widget.courseID,
-                moduleNo: widget.liveData.get('moduleNo'),
+                moduleNo: widget.classData.get('moduleNo'),
               ),
             ));
       }),
@@ -48,8 +49,8 @@ class _LiveClassState extends State<LiveClass> {
         stream: FirebaseFirestore.instance
             .collection('courses')
             .doc(widget.courseID)
-            .collection('lives')
-            .where('moduleNo', isEqualTo: widget.liveData.get('moduleNo'))
+            .collection('classes')
+            .where('moduleNo', isEqualTo: widget.classData.get('moduleNo'))
             .orderBy('classNo', descending: false)
             .snapshots(),
         builder: (context, snapshot) {
@@ -179,24 +180,57 @@ class _LiveClassState extends State<LiveClass> {
                           if (now.isAfter(classTime))
                             AdminButton(
                               onPressed: () {},
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              AddClassMaterials(
-                                                courseID: widget.courseID,
-                                                moduleNo: widget.liveData
-                                                    .get('moduleNo'),
-                                                liveData: data[index],
-                                              )));
-                                },
-                                child: const Icon(
-                                  Icons.add_box_outlined,
-                                  size: 32,
-                                  color: Colors.blueGrey,
-                                ),
+                              child: Row(
+                                children: [
+                                  // video
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddClassMaterials(
+                                                    courseID: widget.courseID,
+                                                    moduleNo: widget.classData
+                                                        .get('moduleNo'),
+                                                    classData: data[index],
+                                                  )));
+                                    },
+                                    child: const Icon(
+                                      Icons.add_box_outlined,
+                                      size: 24,
+                                      color: Colors.blueGrey,
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 4),
+                                  // assignment
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddAssignment(
+                                                    courseID: widget.courseID,
+                                                    moduleNo: widget.classData
+                                                        .get('moduleNo'),
+                                                    classNo: data[index]
+                                                        .get('classNo'),
+                                                    classTitle: data[index]
+                                                        .get('classTitle'),
+                                                    classDate: data[index]
+                                                        .get('classDate')
+                                                        .toDate(),
+                                                  )));
+                                    },
+                                    child: const Icon(
+                                      Icons.add_card_outlined,
+                                      size: 24,
+                                      color: Colors.blueGrey,
+                                    ),
+                                  ),
+                                ],
                               ),
                             )
                         ],
@@ -208,7 +242,7 @@ class _LiveClassState extends State<LiveClass> {
 
                       //2
                       Text(
-                        data[index].get('title'),
+                        data[index].get('classTitle'),
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                               fontWeight: FontWeight.bold,
                               // color: Colors.white,
@@ -218,7 +252,7 @@ class _LiveClassState extends State<LiveClass> {
                       const SizedBox(height: 10),
 
                       //3
-                      if (data[index].get('videoURL') != '')
+                      if (data[index].get('classVideo')[0] != '')
                         MaterialButton(
                           onPressed: () {
                             // play page
@@ -324,7 +358,7 @@ class _LiveClassState extends State<LiveClass> {
                                 if (isClassStart) ...[
                                   //join
                                   if (isClassFinished &&
-                                      data[index].get("videoURL") == '')
+                                      data[index].get("classVideo")[0] == '')
 
                                     //join btn
                                     MaterialButton(
@@ -373,7 +407,7 @@ class _LiveClassState extends State<LiveClass> {
 
                                   //
                                   if (!isClassFinished &&
-                                      data[index].get("videoURL") == '')
+                                      data[index].get("classVideo")[0] == '')
                                     const Row(
                                       children: [
                                         Icon(
@@ -386,7 +420,7 @@ class _LiveClassState extends State<LiveClass> {
                                         //
                                         Expanded(
                                           child: Text(
-                                            "Please wait! We'll be uploading the class materials shortly ...",
+                                            "Please wait! We will upload the class materials soon...",
                                             style: TextStyle(height: 1.2),
                                           ),
                                         ),

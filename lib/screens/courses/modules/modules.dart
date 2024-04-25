@@ -25,6 +25,8 @@ class Modules extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       floatingActionButton: AdminButton(
         onPressed: () {
@@ -94,189 +96,252 @@ class Modules extends StatelessWidget {
                   isOngoing = true;
                 }
 
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ModulesDetails(
-                          courseID: courseID,
-                          data: data[index],
-                        ),
-                      ),
-                    );
-                  },
+                return Center(
                   child: Container(
-                    decoration: BoxDecoration(
-                        color: isOngoing ? Colors.black : Colors.white,
-                        // : statusColor.withOpacity(.05),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Colors.white,
-                        )),
-                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: statusColor.withOpacity(.7),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 4, horizontal: 8),
-                              child: Text(
-                                'Module - ${data[index].get('moduleNo')} ',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                              ),
+                    // color: Colors.white,
+                    constraints: const BoxConstraints(maxWidth: 1080),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth > 600 ? 32 : 0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ModulesDetails(
+                              courseID: courseID,
+                              data: data[index],
                             ),
-                            const SizedBox(width: 16),
-
-                            // date range
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4,
-                                horizontal: 10,
-                              ),
-                              child: Text(
-                                DTFormatter.dateShort(startTime) +
-                                    " - " +
-                                    DTFormatter.dateShort(finishTime),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-
-                        //title
-                        Text(
-                          data[index].get('moduleTitle'),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: isOngoing ? Colors.white : Colors.black,
-                              ),
-                        ),
-                        // const SizedBox(height: 6),
-
-                        //
-                        Row(
-                          children: [
-                            //
-                            SizedBox(
-                              width: 100,
-                              height: 24,
-                              child: StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('courses')
-                                    .doc(courseID)
-                                    .collection('lives')
-                                    .where('moduleNo',
-                                        isEqualTo: data[index].get('moduleNo'))
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const SizedBox();
-                                  }
-                                  var data = snapshot.data!.docs;
-                                  if (data.isEmpty) {
-                                    return const SizedBox();
-                                  }
-                                  if (!snapshot.hasData) {
-                                    return const SizedBox();
-                                  }
-
-                                  return Row(
-                                    children: [
-                                      //icon
-                                      const Icon(
-                                        Icons.video_call_outlined,
-                                        size: 20,
-                                        color: Colors.teal,
-                                      ),
-
-                                      const SizedBox(width: 6),
-
-                                      // label
-                                      Text(
-                                        '${data.length}  Live Class',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.blueGrey,
-                                            ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-
-                            const SizedBox(width: 24),
-
-                            // assignment
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        const Divider(),
-
-                        //status
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: isOngoing ? Colors.black : Colors.white,
+                            // : statusColor.withOpacity(.05),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Colors.white,
+                            )),
+                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Icon(
-                                  statusIcon,
-                                  size: 14,
-                                  color: statusColor,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: statusColor.withOpacity(.7),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 8),
+                                  child: Text(
+                                    'Module - ${data[index].get('moduleNo')} ',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                  ),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  status.toUpperCase(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: statusColor,
-                                      ),
+                                const SizedBox(width: 16),
+
+                                // date range
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                    horizontal: 10,
+                                  ),
+                                  child: Text(
+                                    DTFormatter.dateShort(startTime) +
+                                        " - " +
+                                        DTFormatter.dateShort(finishTime),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                  ),
                                 ),
                               ],
                             ),
-                            Icon(
-                              Icons.keyboard_arrow_right_outlined,
-                              size: 20,
-                              color: isOngoing ? Colors.white : Colors.black,
+                            const Divider(),
+
+                            //title
+                            Text(
+                              data[index].get('moduleTitle'),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        isOngoing ? Colors.white : Colors.black,
+                                  ),
+                            ),
+                            // const SizedBox(height: 6),
+
+                            //
+                            Row(
+                              children: [
+                                // todo: need separate class
+                                SizedBox(
+                                  width: 100,
+                                  height: 24,
+                                  child: StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('courses')
+                                        .doc(courseID)
+                                        .collection('classes')
+                                        .where('moduleNo',
+                                            isEqualTo:
+                                                data[index].get('moduleNo'))
+                                        .snapshots(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const SizedBox();
+                                      }
+                                      var data = snapshot.data!.docs;
+                                      if (data.isEmpty) {
+                                        return const SizedBox();
+                                      }
+                                      if (!snapshot.hasData) {
+                                        return const SizedBox();
+                                      }
+
+                                      return Row(
+                                        children: [
+                                          //icon
+                                          const Icon(
+                                            Icons.video_call_outlined,
+                                            size: 20,
+                                            color: Colors.red,
+                                          ),
+
+                                          const SizedBox(width: 6),
+
+                                          // label
+                                          Text(
+                                            '${data.length}  Live Class',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium!
+                                                .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blueGrey,
+                                                ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+
+                                const SizedBox(width: 24),
+
+                                // assignment
+                                SizedBox(
+                                  width: 120,
+                                  height: 24,
+                                  child: StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('courses')
+                                        .doc(courseID)
+                                        .collection('assignments')
+                                        .where('moduleNo',
+                                            isEqualTo:
+                                                data[index].get('moduleNo'))
+                                        .snapshots(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const SizedBox();
+                                      }
+                                      var data = snapshot.data!.docs;
+                                      if (data.isEmpty) {
+                                        return const SizedBox();
+                                      }
+                                      if (!snapshot.hasData) {
+                                        return const SizedBox();
+                                      }
+
+                                      return Row(
+                                        children: [
+                                          //icon
+                                          const Icon(
+                                            Icons.assignment_outlined,
+                                            size: 18,
+                                            color: Colors.teal,
+                                          ),
+
+                                          const SizedBox(width: 6),
+
+                                          // label
+                                          Text(
+                                            '${data.length}  Live Class',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium!
+                                                .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blueGrey,
+                                                ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            const Divider(),
+
+                            //status
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      statusIcon,
+                                      size: 14,
+                                      color: statusColor,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      status.toUpperCase(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: statusColor,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.keyboard_arrow_right_outlined,
+                                  size: 20,
+                                  color:
+                                      isOngoing ? Colors.white : Colors.black,
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 );

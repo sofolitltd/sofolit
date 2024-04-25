@@ -105,7 +105,7 @@ class RecentSection1 extends StatelessWidget {
           //
           //                         const SizedBox(width: 8),
           //
-          //                         //live
+          //                         //class
           //                         Stack(
           //                           alignment: Alignment.centerLeft,
           //                           children: [

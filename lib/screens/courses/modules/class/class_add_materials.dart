@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/utils/open_app.dart';
 
 // https://youtu.be/Qo_5X3Gu0ls?si=Q0xwiN7BlMs7FjJX
 
@@ -8,12 +9,12 @@ class AddClassMaterials extends StatefulWidget {
     super.key,
     required this.courseID,
     required this.moduleNo,
-    required this.liveData,
+    required this.classData,
   });
 
   final String courseID;
   final int moduleNo;
-  final QueryDocumentSnapshot liveData;
+  final QueryDocumentSnapshot classData;
 
   @override
   State<AddClassMaterials> createState() => _AddClassMaterialsState();
@@ -31,7 +32,7 @@ class _AddClassMaterialsState extends State<AddClassMaterials> {
   void initState() {
     _moduleNoController.text = widget.moduleNo.toString();
     _classNoController.text = widget.moduleNo.toString();
-    _urlController.text = widget.liveData.get('videoURL').toString();
+    _urlController.text = widget.classData.get('classVideo')[0].toString();
     super.initState();
   }
 
@@ -42,6 +43,14 @@ class _AddClassMaterialsState extends State<AddClassMaterials> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Class Materials'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                String path = 'https://youtube.com/@sofolitltd/videos';
+                OpenApp.withUrl(path);
+              },
+              icon: const Icon(Icons.web_stories)),
+        ],
       ),
 
       //
@@ -143,10 +152,10 @@ class _AddClassMaterialsState extends State<AddClassMaterials> {
                       var ref = FirebaseFirestore.instance
                           .collection('courses')
                           .doc(widget.courseID)
-                          .collection('lives')
-                          .doc(widget.liveData.id)
+                          .collection('classes')
+                          .doc(widget.classData.id)
                           .update({
-                        'videoURL': _urlController.text.trim(),
+                        'classVideo': _urlController.text.trim(),
                       }).then((value) {
                         setState(() {
                           _isProgress = false;

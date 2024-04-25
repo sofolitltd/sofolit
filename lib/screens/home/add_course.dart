@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-import '../../../model/course_model.dart';
+import '../../model/course_model.dart';
 
 class AddCourse extends StatefulWidget {
   const AddCourse({super.key});

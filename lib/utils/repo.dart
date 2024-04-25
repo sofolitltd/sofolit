@@ -67,7 +67,7 @@ class AppRepo {
   static const kUnionText = 'Union';
 
 // btn text
-  static const kSeeMoreText = 'See more';
+  static const kSeeMoreText = 'See profile';
   static const kSignupText = 'Create account';
   static const kSignupWithGoogleText = 'Sign up with google';
   static const kForgetText = 'Forget password?';
@@ -114,5 +114,4 @@ class AppRepo {
       'https://sofolit.com/wp-content/uploads/2023/01/sofolit-logo-black.png';
 
   // home
-
 }

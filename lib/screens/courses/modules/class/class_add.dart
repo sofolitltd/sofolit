@@ -160,7 +160,7 @@ class _AddLiveState extends State<AddLive> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               //class link
               TextFormField(
@@ -195,19 +195,22 @@ class _AddLiveState extends State<AddLive> {
                         _isProgress = true;
                       });
 
+                      String classID =
+                          '${DateTime.now().millisecondsSinceEpoch}';
                       //
                       var ref = FirebaseFirestore.instance
                           .collection('courses')
                           .doc(widget.courseID)
-                          .collection('lives')
-                          .doc()
+                          .collection('classes')
+                          .doc(classID)
                           .set({
                         'moduleNo': widget.moduleNo,
                         'classNo': int.parse(_classNoController.text.trim()),
+                        'classID': classID,
+                        'classTitle': _titleController.text.trim(),
                         'classDate': _selectedClassDateTime,
-                        'title': _titleController.text.trim(),
-                        'classLink': _classLinkController.text.trim(),
-                        'videoURL': '',
+                        'classLink': [_classLinkController.text.trim()],
+                        'classVideo': [''],
                       }).then((value) {
                         setState(() {
                           _isProgress = false;
@@ -218,7 +221,7 @@ class _AddLiveState extends State<AddLive> {
                   },
                   child: _isProgress
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Add now'),
+                      : const Text('Add Now'),
                 ),
               ),
             ],

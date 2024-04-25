@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/date_time_formatter.dart';
-import '../modules/video_player.dart';
+import '../modules/video_player_web.dart';
 
 class Recordings extends StatelessWidget {
   const Recordings({
@@ -16,6 +16,8 @@ class Recordings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Class Recording'),
@@ -24,7 +26,7 @@ class Recordings extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('courses')
             .doc(uid)
-            .collection('lives')
+            .collection('classes')
             .orderBy('moduleNo', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -42,7 +44,7 @@ class Recordings extends StatelessWidget {
           var data = snapshot.data!.docs;
 
           var classRecordings =
-              data.where((doc) => doc.get('videoURL') != '').toList();
+              data.where((doc) => doc.get('classVideo')[0] != '').toList();
 
           if (classRecordings.isEmpty) {
             return Center(
@@ -81,13 +83,22 @@ class Recordings extends StatelessWidget {
             );
           }
 
-          return ListView.separated(
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemCount: classRecordings.length,
-            padding: const EdgeInsets.all(16),
-            itemBuilder: (context, index) {
-              return ClassRecordingsCard(data: classRecordings[index]);
-            },
+          return Scrollbar(
+            child: ListView.separated(
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemCount: classRecordings.length,
+              padding: const EdgeInsets.all(16),
+              itemBuilder: (context, index) {
+                return Center(
+                  child: Container(
+                      // color: Colors.white,
+                      constraints: const BoxConstraints(maxWidth: 1080),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth > 600 ? 32 : 0),
+                      child: ClassRecordingsCard(data: classRecordings[index])),
+                );
+              },
+            ),
           );
         },
       ),
@@ -124,12 +135,12 @@ class ClassRecordingsCard extends StatelessWidget {
                 children: [
                   //
                   Container(
-                    width: 94,
+                    // width: 94,
                     decoration: BoxDecoration(
-                      color: Colors.deepOrange.shade100,
+                      color: Colors.teal.shade100,
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 3),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 9, 3),
                     child: Text(
                       'Module  ${data.get('moduleNo')}',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -138,15 +149,15 @@ class ClassRecordingsCard extends StatelessWidget {
                           ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   //
                   Container(
-                    width: 74,
+                    // width: 74,
                     decoration: BoxDecoration(
                       color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    padding: const EdgeInsets.fromLTRB(8, 8, 10, 3),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 9, 3),
                     child: Text(
                       'Class  ${data.get('classNo')}',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -170,7 +181,7 @@ class ClassRecordingsCard extends StatelessWidget {
 
               // 2
               Text(
-                data.get('title'),
+                data.get('classTitle'),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(

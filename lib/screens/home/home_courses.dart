@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../model/course_model.dart';
-import '../home_details.dart';
+import '../../model/course_model.dart';
+import 'home_details.dart';
 
 class HomeCourses extends StatelessWidget {
   const HomeCourses({super.key});
@@ -86,7 +86,7 @@ class HomeCourses extends StatelessWidget {
 
                 //
                 SizedBox(
-                  height: 320,
+                  height: 300,
                   width: MediaQuery.of(context).size.width,
                   // color: Colors.grey,
                   child: ListView.separated(
@@ -146,14 +146,14 @@ class CourseCard extends StatelessWidget {
         );
       },
       child: Card(
-        elevation: 4,
+        elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: Theme.of(context).dividerColor, width: .5),
+          side: const BorderSide(color: Colors.black54, width: .5),
           borderRadius: BorderRadius.circular(8),
         ),
         child: SizedBox(
-          width: 280,
+          width: 260,
           child: Column(
             children: [
               //
@@ -231,7 +231,7 @@ class CourseCard extends StatelessWidget {
                               //batch
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 1,
+                                  vertical: 0,
                                   horizontal: 10,
                                 ),
                                 decoration: BoxDecoration(
@@ -280,7 +280,7 @@ class CourseCard extends StatelessWidget {
                             ],
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 12),
 
                           //title
                           Text(
@@ -289,10 +289,11 @@ class CourseCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context)
                                 .textTheme
-                                .titleLarge!
+                                .titleMedium!
                                 .copyWith(
                                   fontWeight: FontWeight.bold,
                                   height: 1.3,
+                                  // fontSize: 18,
                                 ),
                           ),
                         ],

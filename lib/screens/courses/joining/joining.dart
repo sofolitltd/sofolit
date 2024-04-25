@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sofolit/utils/open_app.dart';
 
 import '/utils/date_time_formatter.dart';
+import '/utils/open_app.dart';
 
 class Joining extends StatelessWidget {
   const Joining({
@@ -17,6 +17,8 @@ class Joining extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Live Class Joining'),
@@ -26,7 +28,7 @@ class Joining extends StatelessWidget {
           stream: FirebaseFirestore.instance
               .collection('courses')
               .doc(courseID)
-              .collection('lives')
+              .collection('classes')
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -90,13 +92,21 @@ class Joining extends StatelessWidget {
             }
 
             //
-            return ListView.separated(
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              itemCount: todayClasses.length,
-              padding: const EdgeInsets.all(16),
-              itemBuilder: (context, index) {
-                return JoiningCard(data: todayClasses[index]);
-              },
+            return Scrollbar(
+              child: ListView.separated(
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                itemCount: todayClasses.length,
+                padding: const EdgeInsets.all(16),
+                itemBuilder: (context, index) {
+                  return Center(
+                      child: Container(
+                          // color: Colors.white,
+                          constraints: const BoxConstraints(maxWidth: 1080),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth > 600 ? 32 : 0),
+                          child: JoiningCard(data: todayClasses[index])));
+                },
+              ),
             );
           },
         ));
@@ -178,7 +188,7 @@ class _JoiningCardState extends State<JoiningCard> {
 
           //2
           Text(
-            widget.data.get('title'),
+            widget.data.get('classTitle'),
             style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   fontWeight: FontWeight.bold,
                   // color: Colors.white,
@@ -228,7 +238,7 @@ class _JoiningCardState extends State<JoiningCard> {
               const Spacer(),
               //
               const Icon(
-                Icons.keyboard_arrow_right_outlined,
+                Icons.keyboard_arrow_down_outlined,
                 color: Colors.black54,
                 size: 24,
               ),
@@ -372,7 +382,7 @@ class _JoiningCardState extends State<JoiningCard> {
 
                                 //
                                 Text(
-                                  'Check "MODULES" or "RECORDING" section for video, material and more...',
+                                  'Check "MODULES" or "RECORDING" section for video, material and profile...',
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium!

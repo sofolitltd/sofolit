@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 
-import '/screens/more/more.dart';
 import 'courses/courses.dart';
-import 'free.dart';
 import 'home/home.dart';
+import 'profile/profile.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -21,8 +20,7 @@ class _LandingPageState extends State<LandingPage> {
   static const List _screens = [
     Home(),
     Courses(),
-    Free(),
-    More(),
+    Profile(),
   ];
 
   void _onItemTapped(int index) {
@@ -65,12 +63,8 @@ class _LandingPageState extends State<LandingPage> {
                   label: 'Courses',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.fitbit_rounded),
-                  label: 'Free',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.more_outlined),
-                  label: 'More',
+                  icon: Icon(Icons.person_outline_outlined),
+                  label: 'Profile',
                 ),
               ],
               currentIndex: _selectedIndex,
@@ -89,10 +83,9 @@ class _LandingPageState extends State<LandingPage> {
 
 class AppSidebarX extends StatelessWidget {
   const AppSidebarX({
-    Key? key,
+    super.key,
     required SidebarXController controller,
-  })  : _controller = controller,
-        super(key: key);
+  }) : _controller = controller;
 
   final SidebarXController _controller;
 
@@ -162,12 +155,8 @@ class AppSidebarX extends StatelessWidget {
             label: 'Courses',
           ),
           const SidebarXItem(
-            icon: Icons.fitbit_rounded,
-            label: 'Free',
-          ),
-          const SidebarXItem(
-            icon: Icons.more_outlined,
-            label: 'More',
+            icon: Icons.person_outline,
+            label: 'Profile',
           ),
         ],
       ),
@@ -185,9 +174,9 @@ final divider = Divider(color: white.withOpacity(0.3), height: 1);
 
 class _ScreensExample extends StatelessWidget {
   const _ScreensExample({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   final SidebarXController controller;
 
@@ -197,14 +186,12 @@ class _ScreensExample extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
-        final pageTitle = _getTitleByIndex(controller.selectedIndex);
+        // final pageTitle = _getTitleByIndex(controller.selectedIndex);
         switch (controller.selectedIndex) {
           case 0:
             return const Home();
           case 2:
-            return const Free();
-          case 3:
-            return const More();
+            return const Profile();
           default:
             return const Courses();
         }
@@ -213,23 +200,23 @@ class _ScreensExample extends StatelessWidget {
   }
 }
 
-String _getTitleByIndex(int index) {
-  switch (index) {
-    case 0:
-      return 'Home';
-    case 1:
-      return 'Search';
-    case 2:
-      return 'People';
-    case 3:
-      return 'Favorites';
-    case 4:
-      return 'Custom iconWidget';
-    case 5:
-      return 'Profile';
-    case 6:
-      return 'Settings';
-    default:
-      return 'Not found page';
-  }
-}
+// String _getTitleByIndex(int index) {
+//   switch (index) {
+//     case 0:
+//       return 'Home';
+//     case 1:
+//       return 'Search';
+//     case 2:
+//       return 'People';
+//     case 3:
+//       return 'Favorites';
+//     case 4:
+//       return 'Custom iconWidget';
+//     case 5:
+//       return 'Profile';
+//     case 6:
+//       return 'Settings';
+//     default:
+//       return 'Not found page';
+//   }
+// }

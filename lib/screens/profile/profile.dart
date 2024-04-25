@@ -2,14 +2,16 @@ import 'package:basic_utils/basic_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/admin/admin_button.dart';
 
+import '../../admin/order.dart';
 import '../../utils/open_app.dart';
 import '../../utils/repo.dart';
 import '../splash.dart';
 import 'change_password.dart';
 
-class More extends StatelessWidget {
-  const More({super.key});
+class Profile extends StatelessWidget {
+  const Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +55,7 @@ class More extends StatelessWidget {
 // card
 class ProfileCard extends StatelessWidget {
   const ProfileCard({super.key, required this.data});
+
   final DocumentSnapshot data;
 
   @override
@@ -63,7 +66,7 @@ class ProfileCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+        // physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.symmetric(
               horizontal: !isSmallScreen ? size.width * .1 : 0),
@@ -114,7 +117,7 @@ class ProfileCard extends StatelessWidget {
                               ),
                       ),
 
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
 
                       //
                       Expanded(
@@ -133,23 +136,35 @@ class ProfileCard extends StatelessWidget {
                                   .copyWith(fontWeight: FontWeight.bold),
                             ),
 
-                            const SizedBox(height: 10),
-
-                            //todo: edit profile
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize: const Size(150, 40),
-                                  ),
-                                  onPressed: () {
-                                    // Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //         builder: (context) =>
-                                    //             EditProfile(data: data)));
-                                  },
-                                  child: const Text('Edit profile')),
+                            Text(
+                              data.get('email'),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            //mobile
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  (Icons.wifi_calling_3_rounded),
+                                  color: Colors.green,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  data.get('mobile'),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        height: 1.6,
+                                        letterSpacing: .5,
+                                        color: Colors.black.withOpacity(.7),
+                                      ),
+                                )
+                              ],
                             ),
                           ],
                         ),
@@ -160,69 +175,11 @@ class ProfileCard extends StatelessWidget {
               ),
 
               const SizedBox(height: 8),
-
-              // email
-              Card(
-                elevation: 0,
-                margin: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-                child: ListTile(
-                  visualDensity: const VisualDensity(vertical: -2),
-                  subtitle: Text(
-                    'Email address',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  title: Text(
-                    data.get('email'),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.blue.shade50,
-                    child: const Icon(
-                      (Icons.email_rounded),
-                      color: Colors.red,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              //mobile
-              Card(
-                elevation: 0,
-                margin: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-                child: ListTile(
-                  visualDensity: const VisualDensity(vertical: -2),
-                  subtitle: Text('Mobile number',
-                      style: Theme.of(context).textTheme.bodySmall),
-                  title: Text(
-                    data.get('mobile'),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.blue.shade50,
-                    child: const Icon(
-                      (Icons.call),
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
               //dev
               Text(
                 'Contact',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(),
               ),
-
-              const SizedBox(height: 8),
-
               // info
               Card(
                 elevation: 0,
@@ -339,7 +296,7 @@ class ProfileCard extends StatelessWidget {
                   ),
                   title: Text(
                     'Change Password',
-                    style: Theme.of(context).textTheme.subtitle1,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   leading: CircleAvatar(
                     backgroundColor: Colors.blue.shade50,
@@ -380,6 +337,52 @@ class ProfileCard extends StatelessWidget {
                   onTap: () => showAlertDialog(context),
                 ),
               ),
+
+              // admin
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: AdminButton(
+                  onPressed: () {},
+                  child: Card(
+                    elevation: 0,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    child: ExpansionTile(
+                      tilePadding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 0),
+                      title: Text(
+                        'Admin',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      subtitle: Text(
+                        'Manage order, Set Notification and more',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      leading: CircleAvatar(
+                        radius: 32,
+                        backgroundColor: Colors.blue.shade50.withOpacity(.5),
+                        child: const Icon(Icons.admin_panel_settings_outlined),
+                      ),
+                      children: [
+                        const Divider(height: 8),
+                        // order
+                        ListTile(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const OrderPage()));
+                          },
+                          title: const Text('Manage Orders'),
+                          subtitle: const Text('Check payment , user and more'),
+                        ),
+                        const Divider(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -396,9 +399,9 @@ class ProfileCard extends StatelessWidget {
         return AlertDialog(
           // <-- SEE HERE
           title: const Text('Log out!'),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
+              children: <Widget>[
                 Text('Are you sure to log out?'),
               ],
             ),

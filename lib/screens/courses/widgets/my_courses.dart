@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sofolit/model/course_model.dart';
 
+import '../../home/home_courses.dart';
 import '../courses_details.dart';
-import '/screens/home/widgets/home_courses.dart';
 
 class MyCourses extends StatelessWidget {
   const MyCourses({super.key});
@@ -61,7 +61,7 @@ class MyCourses extends StatelessWidget {
 
                 //
                 SizedBox(
-                  height: 280,
+                  height: 260,
                   width: MediaQuery.of(context).size.width,
                   // color: Colors.grey,
                   child: ListView.separated(
@@ -102,7 +102,7 @@ class CourseCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => CoursesDetails(
-              uid: data.id,
+              courseID: data.id,
               title: course.courseTitle,
             ),
           ),
@@ -112,7 +112,7 @@ class CourseCard extends StatelessWidget {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: Theme.of(context).dividerColor, width: .5),
+          side: const BorderSide(color: Colors.black54, width: .5),
           borderRadius: BorderRadius.circular(8),
         ),
         child: SizedBox(
@@ -122,7 +122,7 @@ class CourseCard extends StatelessWidget {
             children: [
               //
               Container(
-                height: 150,
+                height: 160,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
@@ -170,9 +170,10 @@ class CourseCard extends StatelessWidget {
                       course.courseTitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             fontWeight: FontWeight.bold,
                             height: 1.3,
+                            fontSize: 18,
                           ),
                     ),
                   ],

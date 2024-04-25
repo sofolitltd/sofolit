@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 enum Status { pending, complete, cancel }
 
-class Payment extends StatelessWidget {
-  const Payment({super.key});
+class OrderPage extends StatelessWidget {
+  const OrderPage({super.key});
 
   @override
   Widget build(BuildContext context) {
