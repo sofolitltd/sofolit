@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sofolit/screens/courses/modules/assignment_check/check_assignments.dart';
 
 import '../../admin/admin_button.dart';
-import '../check_assignments.dart';
 import '/screens/courses/assignments/assignments.dart';
 import '/screens/courses/joining/joining.dart';
 import '/screens/courses/leaderboard/leaderboard.dart';
@@ -50,9 +50,9 @@ class CoursesDetails extends StatelessWidget {
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return const SizedBox(
+                          height: 300,
+                          child: Center(child: CircularProgressIndicator()));
                     }
                     var course = snapshot.data!;
 
@@ -94,7 +94,7 @@ class CoursesDetails extends StatelessWidget {
                                           overflow: TextOverflow.ellipsis,
                                           style: Theme.of(context)
                                               .textTheme
-                                              .headline6!
+                                              .titleLarge!
                                               .copyWith(
                                                 fontWeight: FontWeight.bold,
                                                 height: 1.3,
@@ -115,7 +115,7 @@ class CoursesDetails extends StatelessWidget {
                                             '${course.get('courseBatch')} ',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .subtitle1!
+                                                .titleMedium!
                                                 .copyWith(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white,
@@ -130,12 +130,12 @@ class CoursesDetails extends StatelessWidget {
                                               size: 16,
                                               color: Colors.deepOrange.shade400,
                                             ),
-                                            const SizedBox(width: 4),
+                                            const SizedBox(width: 8),
                                             Text(
-                                              ' Class Days:',
+                                              'Class Days:',
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .subtitle1!
+                                                  .titleMedium!
                                                   .copyWith(
                                                     fontWeight: FontWeight.w500,
                                                   ),
@@ -189,7 +189,7 @@ class CoursesDetails extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .headline6!
+                                            .titleLarge!
                                             .copyWith(
                                               fontWeight: FontWeight.bold,
                                               height: 1.3,
@@ -210,7 +210,7 @@ class CoursesDetails extends StatelessWidget {
                                           '${course.get('courseBatch')} ',
                                           style: Theme.of(context)
                                               .textTheme
-                                              .subtitle1!
+                                              .titleMedium!
                                               .copyWith(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
@@ -230,7 +230,7 @@ class CoursesDetails extends StatelessWidget {
                                             ' Class Days:',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .subtitle1!
+                                                .titleMedium!
                                                 .copyWith(
                                                   fontWeight: FontWeight.w500,
                                                 ),
@@ -320,7 +320,7 @@ class CoursesDetails extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => CheckAssignment(
+                                      builder: (context) => AssignmentsCheck(
                                             courseID: courseID,
                                           )));
                             },
@@ -382,7 +382,7 @@ class CategoryCard extends StatelessWidget {
                 );
               default:
                 return Leaderboard(
-                  uid: courseID,
+                  courseID: courseID,
                   title: categoryList[index]["title"],
                 );
             }
@@ -392,7 +392,7 @@ class CategoryCard extends StatelessWidget {
       color: Colors.white,
       padding: const EdgeInsets.all(8),
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Colors.blueGrey),
+        side: BorderSide(color: Colors.blueGrey.shade100),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -406,7 +406,7 @@ class CategoryCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             categoryList[index]["title"],
-            style: Theme.of(context).textTheme.subtitle1!.copyWith(),
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(),
           ),
         ],
       ),

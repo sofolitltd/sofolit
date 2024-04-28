@@ -147,7 +147,7 @@ class Modules extends StatelessWidget {
                                         ),
                                   ),
                                 ),
-                                const SizedBox(width: 16),
+                                const SizedBox(width: 12),
 
                                 // date range
                                 Container(
@@ -288,7 +288,7 @@ class Modules extends StatelessWidget {
 
                                           // label
                                           Text(
-                                            '${data.length}  Live Class',
+                                            '${data.length}  Assignment',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium!

@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../utils/repo.dart';
 
 class ChangePassword extends StatefulWidget {
-  const ChangePassword({Key? key}) : super(key: key);
+  const ChangePassword({super.key});
 
   @override
   State<ChangePassword> createState() => _ChangePasswordState();

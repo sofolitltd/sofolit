@@ -5,7 +5,7 @@ import '/screens/auth/login.dart';
 import 'screens/landing_page.dart';
 
 class WrapperScreen extends StatelessWidget {
-  const WrapperScreen({Key? key}) : super(key: key);
+  const WrapperScreen({super.key});
   static const routeName = '/';
 
   @override

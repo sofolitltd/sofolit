@@ -1,4 +1,3 @@
-import 'package:basic_utils/basic_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +5,11 @@ import 'package:flutter/material.dart';
 class Leaderboard extends StatefulWidget {
   const Leaderboard({
     super.key,
-    required this.uid,
+    required this.courseID,
     required this.title,
   });
 
-  final String uid;
+  final String courseID;
   final String title;
 
   @override
@@ -24,34 +23,33 @@ class _LeaderboardState extends State<Leaderboard> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('courses')
-              .doc(widget.uid)
-              .collection('leaderboard')
-              .orderBy('marks', descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            var data = snapshot.data!.docs;
-            if (data.isEmpty) {
-              return const Center(
-                child: Text('No data found'),
-              );
-            }
-            if (!snapshot.hasData) {
-              return const Center(
-                child: Text('Something went wrong'),
-              );
-            }
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _calculateAllAverageObtainMarks(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+          var data = snapshot.data!;
+          if (data.isEmpty) {
+            return const Center(
+              child: Text('No data found'),
+            );
+          }
 
-            //
-            return Container(
-              margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          return Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 1080),
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 16,
+                vertical: 16,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 border: Border.all(color: Theme.of(context).dividerColor),
@@ -59,7 +57,7 @@ class _LeaderboardState extends State<Leaderboard> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+                // mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -70,10 +68,7 @@ class _LeaderboardState extends State<Leaderboard> {
                           ),
                     ),
                   ),
-
                   const Divider(height: 2),
-
-                  //
                   ListView.separated(
                     separatorBuilder: (context, index) =>
                         const Divider(height: 1),
@@ -81,66 +76,116 @@ class _LeaderboardState extends State<Leaderboard> {
                     itemCount: data.length,
                     padding: const EdgeInsets.fromLTRB(0, 8, 0, 12),
                     itemBuilder: (context, index) {
-                      var uid = FirebaseAuth.instance.currentUser!.uid;
-                      //
-                      return Container(
-                        color: data[index].get('uid') == uid
-                            ? Colors.yellow.shade200
-                            : Theme.of(context).cardColor,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          minLeadingWidth: 0,
-                          leading: Text(
-                            '${index + 1}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          title: Text(StringUtils.capitalize(
-                              '${data[index].get('name')}',
-                              allWords: true)),
-                          trailing: FittedBox(
-                            child: Column(
-                              children: [
-                                //
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    '${data[index].get('marks')}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                ),
-
-                                //
-                                Text(
-                                  'points',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(
-                                        fontWeight: FontWeight.w100,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
+                      var docData = data[index];
+                      var averageObtainMark =
+                          docData['averageObtainMark'] ?? 0.0;
+                      var documentId = docData['documentId'];
+                      return _buildListItem(
+                          documentId, averageObtainMark, index);
                     },
                   ),
                 ],
               ),
-            );
-          }),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> _calculateAllAverageObtainMarks() async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('courses')
+        .doc(widget.courseID)
+        .collection('leaderboard')
+        .get();
+    var data = <Map<String, dynamic>>[];
+    for (var doc in snapshot.docs) {
+      var documentId = doc.id;
+      var assignmentsRef = doc.reference.collection('assignments');
+      var assignmentQuerySnapshot = await assignmentsRef.get();
+      int totalObtainMark = 0;
+      int totalAssignments = 0;
+      for (var assignmentDoc in assignmentQuerySnapshot.docs) {
+        int obtainMark = assignmentDoc.get('obtainMark') ?? 0;
+        totalObtainMark += obtainMark;
+        totalAssignments++;
+      }
+      double averageObtainMark =
+          totalAssignments > 0 ? totalObtainMark / totalAssignments : 0;
+      data.add(
+          {'documentId': documentId, 'averageObtainMark': averageObtainMark});
+    }
+
+    // Sort the data based on average obtain mark in descending order
+    data.sort(
+        (a, b) => b['averageObtainMark'].compareTo(a['averageObtainMark']));
+
+    return data;
+  }
+
+  Widget _buildListItem(
+      String documentId, double averageObtainMark, int index) {
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+
+    return Container(
+      color: documentId == uid
+          ? Colors.yellow.shade200
+          : Theme.of(context).cardColor,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        minLeadingWidth: 0,
+        leading: Text(
+          '${index + 1}',
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        title: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(documentId)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: Container(),
+              );
+            }
+            var data = snapshot.data!;
+            if (!data.exists) {
+              return const Center(
+                child: Text('No data found'),
+              );
+            }
+            return Text(data.get('name'));
+          },
+        ),
+        trailing: FittedBox(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  averageObtainMark.toStringAsFixed(0),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Text(
+                'points',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontWeight: FontWeight.w100),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

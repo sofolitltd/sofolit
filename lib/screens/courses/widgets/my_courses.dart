@@ -61,7 +61,7 @@ class MyCourses extends StatelessWidget {
 
                 //
                 SizedBox(
-                  height: 260,
+                  height: 325,
                   width: MediaQuery.of(context).size.width,
                   // color: Colors.grey,
                   child: ListView.separated(
@@ -138,7 +138,7 @@ class CourseCard extends StatelessWidget {
                 ),
               ),
 
-              //batch
+              //
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -147,6 +147,7 @@ class CourseCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    //batch
                     Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 2,
@@ -163,18 +164,50 @@ class CourseCard extends StatelessWidget {
                             ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
                     //title
-                    Text(
-                      course.courseTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            height: 1.3,
-                            fontSize: 18,
+                    SizedBox(
+                      height: 48,
+                      child: Text(
+                        course.courseTitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.3,
+                                  fontSize: 18,
+                                ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // btn
+                    Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Start Now",
+                            style: TextStyle(color: Colors.white),
                           ),
+                          SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_right_alt,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

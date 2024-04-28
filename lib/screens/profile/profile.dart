@@ -191,7 +191,7 @@ class ProfileCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                   title: Text(
                     'Sofol IT',
-                    style: Theme.of(context).textTheme.subtitle1,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   subtitle: Text(
                     'Contact with us',

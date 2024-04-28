@@ -36,7 +36,7 @@ class RecentSection1 extends StatelessWidget {
               child: Text('Something went wrong'),
             );
           }
-          return Text('okk');
+          return const Text('okk');
           // return Container(
           //   height: 250,
           //   color: Theme.of(context).cardColor,
@@ -516,9 +516,9 @@ class RecentSection extends StatelessWidget {
                                           ),
                                           padding: const EdgeInsets.fromLTRB(
                                               20, 5, 25, 5),
-                                          child: Row(
+                                          child: const Row(
                                             mainAxisSize: MainAxisSize.min,
-                                            children: const [
+                                            children: [
                                               Icon(Icons.video_call_outlined),
 
                                               SizedBox(width: 4),

@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class AddModule extends StatefulWidget {
-  const AddModule({Key? key, required this.uid}) : super(key: key);
+  const AddModule({super.key, required this.uid});
 
   final String uid;
 
@@ -133,7 +133,7 @@ class _AddModuleState extends State<AddModule> {
 
               Text(
                 'Course Start And Finish Date',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
 
               const SizedBox(height: 4),

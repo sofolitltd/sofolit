@@ -317,36 +317,6 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                           .doc(widget.assignmentData.id);
 
                       if (assignmentStatus == AssignmentStatus.pending.name) {
-                        // Remove existing entry for currentUserID
-                        List updatedList = List.from(submitterList)
-                          ..removeWhere((submitter) =>
-                              submitter['submitterID'] == currentUserID);
-
-                        // Add the new entry for currentUserID
-                        updatedList.add({
-                          'submitterID': currentUserID,
-                          'obtainMark': 0,
-                          'feedback': '',
-                          'submittedLink': '',
-                        });
-
-                        // Update the Firestore document with the updated list
-                        ref.update({
-                          'submitterList': updatedList,
-                        });
-                      } else if (assignmentStatus ==
-                          AssignmentStatus.submitted.name) {
-                        // Update assignment link
-                        await ref.update({
-                          'submitterList': FieldValue.arrayRemove([
-                            {
-                              'submitterID': currentUserID,
-                              'obtainMark': obtainMark,
-                              'feedback': feedback,
-                              'submittedLink': '', // Remove previous link
-                            },
-                          ]),
-                        });
                         await ref.update({
                           'submitterList': FieldValue.arrayUnion([
                             {
@@ -357,6 +327,30 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                   .trim(), // Update with new link
                             },
                           ]),
+                        });
+                      } else if (assignmentStatus ==
+                          AssignmentStatus.submitted.name) {
+                        // Get the existing submitterList
+                        List<dynamic> submitterList =
+                            List.from(widget.assignmentData['submitterList']);
+
+                        // Update or replace the entry for currentUserID
+                        for (int i = 0; i < submitterList.length; i++) {
+                          if (submitterList[i]['submitterID'] ==
+                              currentUserID) {
+                            submitterList[i] = {
+                              'submitterID': currentUserID,
+                              'obtainMark': 0,
+                              'feedback': '',
+                              'submittedLink': _urlController.text.trim(),
+                            };
+                            break; // Exit loop once updated
+                          }
+                        }
+
+                        // Update assignment link
+                        await ref.update({
+                          'submitterList': submitterList,
                         });
                       }
                     }

@@ -503,31 +503,6 @@ class _AssignmentsState extends State<Assignments> {
                                         ),
                                   ),
                                 ),
-
-                              // todo: assignment admin
-                              // if (now.isAfter(classTime))
-                              //   AdminButton(
-                              //     onPressed: () {},
-                              //     child: GestureDetector(
-                              //       onTap: () {
-                              //         // Navigator.push(
-                              //         //     context,
-                              //         //     MaterialPageRoute(
-                              //         //         builder: (context) =>
-                              //         //             AddClassMaterials(
-                              //         //               courseID: widget.courseID,
-                              //         //               moduleNo: widget.classData
-                              //         //                   .get('moduleNo'),
-                              //         //               classData: data[index],
-                              //         //             )));
-                              //       },
-                              //       child: const Icon(
-                              //         Icons.add_box_outlined,
-                              //         size: 32,
-                              //         color: Colors.blueGrey,
-                              //       ),
-                              //     ),
-                              //   )
                             ],
                           ),
 
