@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sofolit/dashboard/course_screen_user.dart';
 
 import '/dashboard/dashboard.dart';
 import 'components/app_drawer.dart';
@@ -14,7 +16,7 @@ bool isAdminLoggedIn = false;
 
 // AppRouter configuration
 final GoRouter goRouter = GoRouter(
-  initialLocation: '/', // Set initial route
+  initialLocation: '/',
   routes: [
     // main
     ShellRoute(
@@ -54,13 +56,19 @@ final GoRouter goRouter = GoRouter(
             GoRoute(
               path: ':slug', // Route with slug as a parameter
               pageBuilder: (context, state) {
-                final String title =
-                    state.extra as String; // Title passed as extra data
-                getTitle(context, title);
+                final String slug = state.pathParameters['slug']!;
+                String title = slug.replaceAll('-', ' ');
+                //capitalize each first letter
+                title = title
+                    .split(' ')
+                    .map((word) {
+                      return word.isNotEmpty
+                          ? '${word[0].toUpperCase()}${word.substring(1)}'
+                          : word;
+                    })
+                    .join(' ');
 
-                final String slug =
-                    state
-                        .pathParameters['slug']!; // Extracting slug from the URL
+                getTitle(context, '$title | Sofol IT');
                 return NoTransitionPage(child: CourseDetailsScreen(slug: slug));
               },
             ),
@@ -82,16 +90,72 @@ final GoRouter goRouter = GoRouter(
             ),
           ],
         ),
+      ],
+    ),
 
-        //dashboard
+    //
+    ShellRoute(
+      builder: (context, state, child) {
+        return Scaffold(
+          body: Row(
+            children: [
+              //
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(width: 2, color: Colors.black12),
+                  ),
+                ),
+                width: 250,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 24,
+                  horizontal: 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      child: ListTile(
+                        title: Text('Courses'),
+                        onTap: () {
+                          context.go('/dashboard/courses');
+                        },
+                      ),
+                    ),
+                    Spacer(),
+                    ElevatedButton(
+                      child: Text('Logout'),
+                      onPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        context.go('/');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(child: child),
+            ],
+          ),
+        );
+      },
+      routes: [
         GoRoute(
-          path: '/dashboard', // Initial route for HomeScreen
+          path: '/dashboard',
           pageBuilder: (context, state) {
-            getTitle(context, 'Dashboard | Sofol IT');
+            getTitle(context, 'Dashboard | Success begins here');
             return const NoTransitionPage(
               child: DashboardScreen(),
             ); // HomeScreen as initial page
           },
+          routes: [
+            GoRoute(
+              path: 'courses',
+              pageBuilder: (context, state) {
+                getTitle(context, 'Courses | Sofol IT');
+                return const NoTransitionPage(child: CourseScreenUser());
+              },
+            ),
+          ],
         ),
       ],
     ),

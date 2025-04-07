@@ -8,8 +8,6 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = FirebaseAuth.instance.currentUser;
-
     //
     return Container(
       decoration: BoxDecoration(
@@ -84,39 +82,7 @@ class AppHeader extends StatelessWidget {
                     const SizedBox(width: 16),
 
                     //
-                    Material(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(6),
-                        onTap: () {
-                          //
-                          if (user == null) {
-                            showLoginDialog(context);
-                          } else {
-                            context.go('/dashboard');
-                          }
-                        },
-                        child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                            color:
-                                user == null
-                                    ? Colors.black12.withValues(alpha: .05)
-                                    : Colors.blueAccent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            user == null ? 'লগ ইন/সাইন আপ' : 'ড্যাশবোর্ড',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: user == null ? Colors.black : Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    LoginButton(),
                   ],
                 );
               } else {
@@ -159,39 +125,7 @@ class AppHeader extends StatelessWidget {
                     ),
 
                     //
-                    Material(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(6),
-                        onTap: () {
-                          //
-                          if (user == null) {
-                            showLoginDialog(context);
-                          } else {
-                            context.go('/dashboard');
-                          }
-                        },
-                        child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                            color:
-                                user == null
-                                    ? Colors.black12.withValues(alpha: .05)
-                                    : Colors.blueAccent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            user == null ? 'লগ ইন' : 'ড্যাশবোর্ড',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: user == null ? Colors.black : Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    LoginButton(),
                   ],
                 );
               }
@@ -199,6 +133,58 @@ class AppHeader extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+//
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      // Firebase auth state stream
+      builder: (context, snapshot) {
+        // snapshot.data will be the user object or null if not signed in
+        User? user = snapshot.data;
+
+        return Material(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(6),
+            onTap: () {
+              if (user == null) {
+                showLoginDialog(context); // Show login dialog if not logged in
+              } else {
+                // Navigate to the dashboard if logged in
+                context.go('/dashboard');
+              }
+            },
+            child: Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color:
+                    user == null
+                        ? Colors.black12.withValues(alpha: 0.05)
+                        : Colors.blueAccent,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                user == null ? 'লগ ইন' : 'ড্যাশবোর্ড',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: user == null ? Colors.black : Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

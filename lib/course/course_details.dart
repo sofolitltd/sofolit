@@ -48,13 +48,22 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                   children: [
                     //
                     Obx(() {
-                      if (courseController.isLoading.value) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+                      // if (courseController.isLoading.value) {
+                      //   return const Text('');
+                      // }
                       final course = courseController.selectedCourse.value;
 
                       if (course == null) {
-                        return const Center(child: Text('Course not found'));
+                        return Container(
+                          constraints: BoxConstraints(minHeight: 500),
+                          child: Center(
+                            child: SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        );
                       }
 
                       return Center(
@@ -137,7 +146,18 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        Text(course.description),
+        Padding(
+          padding: EdgeInsets.only(right: 16),
+          child: Text(
+            course.description,
+            style: TextStyle(
+              fontSize: 16,
+              height: 2,
+              fontWeight: FontWeight.w500,
+              // justify line
+            ),
+          ),
+        ),
       ],
     );
 

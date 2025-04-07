@@ -23,9 +23,10 @@ class HomeScreen extends StatelessWidget {
             Center(
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 1280),
-                padding: MediaQuery.sizeOf(context).width > 1280
-                    ? EdgeInsets.symmetric(vertical: 24, horizontal: 0)
-                    : const EdgeInsets.all(16.0),
+                padding:
+                    MediaQuery.sizeOf(context).width > 1280
+                        ? EdgeInsets.symmetric(vertical: 24, horizontal: 0)
+                        : const EdgeInsets.all(16.0),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     if (constraints.maxWidth < 700) {
@@ -51,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                             //
                             _buildCourseList(),
                             //
-                            _buildBenefitList(),
+                            BenefitSection(),
                           ],
                         ),
                       );
@@ -69,14 +70,18 @@ class HomeScreen extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     flex: 1,
-                                    child: _buildDetailsBox(context,
-                                        isMobile: false),
+                                    child: _buildDetailsBox(
+                                      context,
+                                      isMobile: false,
+                                    ),
                                   ),
                                   // const SizedBox(width: 16),
                                   Expanded(
                                     flex: 1,
-                                    child: _buildImageBox(context,
-                                        isMobile: false),
+                                    child: _buildImageBox(
+                                      context,
+                                      isMobile: false,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -84,7 +89,7 @@ class HomeScreen extends StatelessWidget {
                             //
                             _buildCourseList(),
                             //
-                            _buildBenefitList(),
+                            BenefitSection(),
                           ],
                         ),
                       );
@@ -95,10 +100,7 @@ class HomeScreen extends StatelessWidget {
             ),
 
             //
-            ...[
-              const SizedBox(height: 40),
-              const AppFooter(),
-            ],
+            ...[const SizedBox(height: 40), const AppFooter()],
           ],
         ),
       ),
@@ -110,9 +112,7 @@ class HomeScreen extends StatelessWidget {
 _buildDetailsBox(BuildContext context, {required bool isMobile}) {
   return Container(
     alignment: Alignment.center,
-    decoration: BoxDecoration(
-      color: Colors.black12.withValues(alpha: .05),
-    ),
+    decoration: BoxDecoration(color: Colors.black12.withValues(alpha: .05)),
     height: isMobile ? 300 : 450,
     padding: EdgeInsets.all(isMobile ? 16 : 24),
     child: Column(
@@ -137,10 +137,7 @@ _buildDetailsBox(BuildContext context, {required bool isMobile}) {
         Text(
           'পছন্দের কোর্সে যোগ দিন এবং দক্ষতা অর্জনের মাধ্যমে গড়ে তুলুন আপনার ভবিষ্যৎ',
           textAlign: isMobile ? TextAlign.center : TextAlign.left,
-          style: TextStyle(
-            fontSize: isMobile ? 14 : 18,
-            height: 1.5,
-          ),
+          style: TextStyle(fontSize: isMobile ? 14 : 18, height: 1.5),
         ),
 
         const SizedBox(height: 32),
@@ -205,148 +202,145 @@ _buildCourseList() {
         padding: EdgeInsets.symmetric(vertical: 16),
         child: Text(
           'আমাদের কোর্স সমূহ',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
       ),
 
       const SizedBox(height: 16),
 
       //
-      Obx(
-        () {
-          if (courseController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return SizedBox(
-            height: 330,
-            child: ScrollConfiguration(
-              behavior: WebScrollBehavior(), // Enable mouse scrolling on web
-              child: ListView.separated(
-                // itemCount: courses.length,
-                itemCount: courseController.courses.length,
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(bottom: 20),
-                itemBuilder: (context, index) {
-                  Course course = courseController.courses[index];
+      Obx(() {
+        if (courseController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return SizedBox(
+          height: 330,
+          child: ScrollConfiguration(
+            behavior: WebScrollBehavior(), // Enable mouse scrolling on web
+            child: ListView.separated(
+              // itemCount: courses.length,
+              itemCount: courseController.courses.length,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(bottom: 20),
+              itemBuilder: (context, index) {
+                Course course = courseController.courses[index];
 
-                  // Course course = courses[index];
-                  //
-                  return CourseCard(course: course);
-                },
-                separatorBuilder: (context, index) => const SizedBox(width: 24),
-              ),
+                // Course course = courses[index];
+                //
+                return CourseCard(course: course);
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 24),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      }),
     ],
   );
 }
 
-_buildBenefitList() {
-  List<Benefit> benefits = [
-    Benefit(
-      id: '1',
-      imageUrl: 'live_class.png',
-      title: 'লাইভ ক্লাস',
-      subtitle: 'বিশেষজ্ঞ প্রশিক্ষকদের সাথে সরাসরি ইন্টারঅ্যাক্টিভ সেশন।',
-    ),
-    Benefit(
-      id: '2',
-      imageUrl: 'recorded_class.png',
-      title: 'রেকর্ডেড ক্লাস',
-      subtitle: 'স্বাচ্ছন্দ্যে প্রি-রেকর্ডেড সেশনগুলিতে প্রবেশ করুন।',
-    ),
-    Benefit(
-      id: '3',
-      imageUrl: 'contents.png',
-      title: 'মানসম্মত কন্টেন্ট',
-      subtitle: 'বর্তমান বাজার চাহিদা অনুযায়ী প্রস্তুতকৃত সিলেবাস।',
-    ),
-    Benefit(
-      id: '4',
-      imageUrl: 'mentor.png',
-      title: 'মেন্টর সহায়তা',
-      subtitle: 'অভিজ্ঞ মেন্টরদের কাছ থেকে পরামর্শ ও ফিডব্যাক।',
-    ),
-    Benefit(
-      id: '5',
-      imageUrl: 'assignemnt.png',
-      title: 'প্রজেক্ট অ্যাসাইনমেন্ট',
-      subtitle: 'বাস্তব জীবনের প্রজেক্টের সাথে হাতে-কলমে কাজের অভিজ্ঞতা।',
-    ),
-    Benefit(
-      id: '6',
-      imageUrl: 'freelancing.png',
-      title: 'ফ্রিল্যান্সিং নির্দেশিকা',
-      subtitle: 'সফল ফ্রিল্যান্সিংয়ের জন্য টিপস এবং কৌশল।',
-    ),
-    Benefit(
-      id: '7',
-      imageUrl: 'support.png',
-      title: 'কমিউনিটি সাপোর্ট',
-      subtitle: 'সহপাঠী ও শিক্ষার্থীদের সাথে সহযোগিতামূলক শিক্ষার সুযোগ।',
-    ),
-    Benefit(
-      id: '8',
-      imageUrl: 'assessment.png',
-      title: 'অনলাইন মূল্যায়ন',
-      subtitle: 'কোর্সে শেষে পরীক্ষার মাধ্যমে মূল্যায়নের সুযোগ।',
-    ),
-  ];
+List<Benefit> benefits = [
+  Benefit(
+    id: '1',
+    imageUrl: 'live_class.png',
+    title: 'লাইভ ক্লাস',
+    subtitle: 'বিশেষজ্ঞ প্রশিক্ষকদের সাথে সরাসরি ইন্টারঅ্যাক্টিভ সেশন।',
+  ),
+  Benefit(
+    id: '2',
+    imageUrl: 'recorded_class.png',
+    title: 'রেকর্ডেড ক্লাস',
+    subtitle: 'স্বাচ্ছন্দ্যে প্রি-রেকর্ডেড সেশনগুলিতে প্রবেশ করুন।',
+  ),
+  Benefit(
+    id: '3',
+    imageUrl: 'contents.png',
+    title: 'মানসম্মত কন্টেন্ট',
+    subtitle: 'বর্তমান বাজার চাহিদা অনুযায়ী প্রস্তুতকৃত সিলেবাস।',
+  ),
+  Benefit(
+    id: '4',
+    imageUrl: 'mentor.png',
+    title: 'মেন্টর সহায়তা',
+    subtitle: 'অভিজ্ঞ মেন্টরদের কাছ থেকে পরামর্শ ও ফিডব্যাক।',
+  ),
+  Benefit(
+    id: '5',
+    imageUrl: 'assignemnt.png',
+    title: 'প্রজেক্ট অ্যাসাইনমেন্ট',
+    subtitle: 'বাস্তব জীবনের প্রজেক্টের সাথে হাতে-কলমে কাজের অভিজ্ঞতা।',
+  ),
+  Benefit(
+    id: '6',
+    imageUrl: 'freelancing.png',
+    title: 'ফ্রিল্যান্সিং নির্দেশিকা',
+    subtitle: 'সফল ফ্রিল্যান্সিংয়ের জন্য টিপস এবং কৌশল।',
+  ),
+  Benefit(
+    id: '7',
+    imageUrl: 'support.png',
+    title: 'কমিউনিটি সাপোর্ট',
+    subtitle: 'সহপাঠী ও শিক্ষার্থীদের সাথে সহযোগিতামূলক শিক্ষার সুযোগ।',
+  ),
+  Benefit(
+    id: '8',
+    imageUrl: 'assessment.png',
+    title: 'অনলাইন মূল্যায়ন',
+    subtitle: 'কোর্সে শেষে পরীক্ষার মাধ্যমে মূল্যায়নের সুযোগ।',
+  ),
+];
 
-  //
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const SizedBox(height: 32),
-      //
-      const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        child: Text(
-          'কোর্সের সাথে যা যা পাচ্ছেন',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
+class BenefitSection extends StatelessWidget {
+  const BenefitSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 32),
+        //
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: Text(
+            'কোর্সের সাথে যা যা পাচ্ছেন',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
           ),
         ),
-      ),
 
-      const SizedBox(height: 16),
+        const SizedBox(height: 16),
 
-      //
-      LayoutBuilder(
-        builder: (context, constraints) {
-          // Determine number of columns based on screen size
-          int crossAxisCount = _getCrossAxisCount(constraints.maxWidth);
+        //
+        LayoutBuilder(
+          builder: (context, constraints) {
+            // Determine number of columns based on screen size
+            int crossAxisCount = _getCrossAxisCount(constraints.maxWidth);
 
-          return Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            children: [
-              for (var benefit in benefits)
-                SizedBox(
-                  width: (constraints.maxWidth - (crossAxisCount - 1) * 16) /
-                      crossAxisCount,
-                  child: BenefitCardGrid(benefit: benefit),
-                ),
-            ],
-          );
-        },
-      ),
-      //
-    ],
-  );
+            return Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                for (var benefit in benefits)
+                  SizedBox(
+                    width:
+                        (constraints.maxWidth - (crossAxisCount - 1) * 16) /
+                        crossAxisCount,
+                    child: BenefitCard(benefit: benefit),
+                  ),
+              ],
+            );
+          },
+        ),
+        //
+      ],
+    );
+  }
 }
 
 //
-class BenefitCardGrid extends StatelessWidget {
+class BenefitCard extends StatelessWidget {
   final Benefit benefit;
 
-  const BenefitCardGrid({super.key, required this.benefit});
+  const BenefitCard({super.key, required this.benefit});
 
   @override
   Widget build(BuildContext context) {
@@ -372,10 +366,7 @@ class BenefitCardGrid extends StatelessWidget {
             Text(
               benefit.title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             // const SizedBox(height: 8),
             Container(
@@ -429,13 +420,16 @@ double _adaptiveFontSize(BuildContext context, double baseFontSize) {
 class WebScrollBehavior extends ScrollBehavior {
   @override
   Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
+    BuildContext context,
+    Widget child,
+    AxisDirection axisDirection,
+  ) {
     return child;
   }
 
   @override
   Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse, // Enables mouse drag for web
-      };
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse, // Enables mouse drag for web
+  };
 }
